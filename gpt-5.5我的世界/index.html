@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="WebGame 聚合站的第一个可玩游戏：gpt-5.5我的世界。"
+    />
+    <title>WebGame | gpt-5.5我的世界</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="WebGame 首页">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>WebGame</span>
+        </a>
+        <nav class="game-nav" aria-label="游戏列表">
+          <a class="game-nav__item is-active" href="#minecraft" aria-current="page">gpt-5.5我的世界</a>
+        </nav>
+      </header>
+
+      <main class="game-layout" id="minecraft">
+        <section class="game-stage" aria-labelledby="game-title">
+          <div class="stage-header">
+            <div>
+              <p class="eyebrow">首发游戏</p>
+              <h1 id="game-title">gpt-5.5我的世界</h1>
+            </div>
+            <div class="status-strip" role="group" aria-label="玩家状态">
+              <span id="healthText">生命 100</span>
+              <span id="dayText">第 1 天</span>
+              <span id="seedText">Seed 0000</span>
+            </div>
+          </div>
+
+          <div class="canvas-frame">
+            <canvas id="gameCanvas" width="1280" height="720" aria-label="gpt-5.5我的世界方块沙盒游戏画面" tabindex="0"></canvas>
+            <div class="touch-pad" role="group" aria-label="触屏移动控制">
+              <button type="button" data-touch="up" aria-label="向上移动">▲</button>
+              <button type="button" data-touch="left" aria-label="向左移动">◀</button>
+              <button type="button" data-touch="down" aria-label="向下移动">▼</button>
+              <button type="button" data-touch="right" aria-label="向右移动">▶</button>
+            </div>
+          </div>
+
+          <div class="hotbar" id="hotbar" role="group" aria-label="方块背包"></div>
+        </section>
+
+        <aside class="control-panel" aria-label="游戏操作面板">
+          <section class="panel-section">
+            <h2>世界</h2>
+            <dl class="stats-list">
+              <div>
+                <dt>坐标</dt>
+                <dd id="positionText">0, 0</dd>
+              </div>
+              <div>
+                <dt>背包</dt>
+                <dd id="inventoryText">0</dd>
+              </div>
+              <div>
+                <dt>方块</dt>
+                <dd id="selectedText">草方块</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="panel-section">
+            <h2>操作</h2>
+            <div class="action-grid">
+              <button type="button" id="mineButton">挖掘</button>
+              <button type="button" id="placeButton">放置</button>
+              <button type="button" id="saveButton">保存</button>
+              <button type="button" id="resetButton">重置</button>
+            </div>
+            <p class="panel-status" id="messageText" role="status" aria-live="polite">世界已生成</p>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <dialog class="confirm-dialog" id="resetDialog" aria-labelledby="resetDialogTitle">
+      <form method="dialog">
+        <h2 id="resetDialogTitle">重置世界</h2>
+        <p>当前存档会被清除，并生成一个新世界。</p>
+        <div class="dialog-actions">
+          <button type="submit" value="cancel">取消</button>
+          <button type="button" id="confirmResetButton">确认重置</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="src/game/config.js"></script>
+    <script src="src/game/storage.js"></script>
+    <script src="src/game/world.js"></script>
+    <script src="src/game/player.js"></script>
+    <script src="src/game/input.js"></script>
+    <script src="src/game/renderer.js"></script>
+    <script src="src/game/ui.js"></script>
+    <script src="src/main.js"></script>
+  </body>
+</html>

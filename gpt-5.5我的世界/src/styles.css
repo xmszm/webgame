@@ -1,0 +1,433 @@
+:root {
+  color-scheme: dark;
+  --bg: #101417;
+  --panel: #171d21;
+  --panel-strong: #20282e;
+  --line: #344049;
+  --text: #edf3ee;
+  --muted: #a9b5ad;
+  --accent: #59b36b;
+  --accent-strong: #76d083;
+  --danger: #d9635f;
+  --shadow: 0 18px 60px rgb(0 0 0 / 0.28);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+}
+
+body {
+  min-height: 100dvh;
+}
+
+button,
+a {
+  font: inherit;
+}
+
+button:focus-visible,
+a:focus-visible,
+canvas:focus-visible {
+  outline: 3px solid var(--accent-strong);
+  outline-offset: 3px;
+}
+
+.app-shell {
+  min-height: 100dvh;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1500px;
+  margin: 0 auto 16px;
+}
+
+.brand,
+.game-nav__item {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+}
+
+.brand-mark {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #6bbf59;
+  border-radius: 6px;
+  background: #5cab49;
+  box-shadow:
+    inset 0 -12px 0 #7a5430,
+    inset -8px 0 0 rgb(0 0 0 / 0.14);
+}
+
+.game-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.game-nav__item {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 12px;
+  background: var(--panel);
+  color: var(--muted);
+}
+
+.game-nav__item.is-active {
+  border-color: #76d083;
+  color: var(--text);
+}
+
+.game-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 16px;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+.game-stage,
+.control-panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.game-stage {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.stage-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel-strong);
+}
+
+.eyebrow,
+.stage-header h1 {
+  margin: 0;
+}
+
+.eyebrow {
+  color: var(--accent-strong);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.stage-header h1 {
+  margin-top: 4px;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  line-height: 1;
+  text-wrap: balance;
+}
+
+.status-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.status-strip span,
+.panel-status {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgb(255 255 255 / 0.04);
+  padding: 8px 10px;
+}
+
+.canvas-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 360px;
+  background: #0c1114;
+}
+
+#gameCanvas {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+.touch-pad {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  display: none;
+  grid-template-columns: repeat(3, 46px);
+  grid-template-rows: repeat(3, 46px);
+  gap: 8px;
+}
+
+.touch-pad button {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgb(16 20 23 / 0.82);
+  color: var(--text);
+}
+
+.touch-pad [data-touch="up"] {
+  grid-column: 2;
+}
+
+.touch-pad [data-touch="left"] {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.touch-pad [data-touch="down"] {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.touch-pad [data-touch="right"] {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.hotbar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+  gap: 10px;
+  padding: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.hotbar button {
+  min-width: 0;
+  min-height: 70px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-strong);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.hotbar button.is-selected {
+  border-color: var(--accent-strong);
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.block-swatch {
+  display: block;
+  width: 30px;
+  height: 30px;
+  margin: 0 auto 6px;
+  border: 2px solid rgb(255 255 255 / 0.22);
+  border-radius: 6px;
+}
+
+.block-name,
+.block-count {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.82rem;
+}
+
+.block-count {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.control-panel {
+  min-width: 0;
+  align-self: start;
+  padding: 16px;
+}
+
+.panel-section + .panel-section {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.panel-section h2 {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  text-wrap: balance;
+}
+
+.stats-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.stats-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+}
+
+.stats-list dd,
+.stats-list dt {
+  margin: 0;
+}
+
+.stats-list dd {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.action-grid button {
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #263039;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.action-grid button:hover,
+.hotbar button:hover,
+.touch-pad button:hover {
+  border-color: var(--accent);
+}
+
+.panel-status {
+  margin: 12px 0 0;
+  min-height: 40px;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.confirm-dialog {
+  width: min(420px, calc(100vw - 32px));
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+.confirm-dialog::backdrop {
+  background: rgb(0 0 0 / 0.64);
+}
+
+.confirm-dialog h2,
+.confirm-dialog p {
+  margin: 0;
+}
+
+.confirm-dialog h2 {
+  font-size: 1.2rem;
+  text-wrap: balance;
+}
+
+.confirm-dialog p {
+  margin-top: 10px;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.dialog-actions button {
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #263039;
+  color: var(--text);
+  cursor: pointer;
+  padding: 0 14px;
+}
+
+.dialog-actions #confirmResetButton {
+  border-color: var(--danger);
+}
+
+@media (max-width: 1050px) {
+  .game-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .control-panel {
+    align-self: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell {
+    padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right))
+      max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  }
+
+  .topbar,
+  .stage-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .status-strip {
+    justify-content: flex-start;
+  }
+
+  .canvas-frame {
+    aspect-ratio: 4 / 3;
+    min-height: 0;
+  }
+
+  .touch-pad {
+    display: grid;
+  }
+
+  .game-layout,
+  .game-stage,
+  .control-panel,
+  .canvas-frame,
+  .hotbar {
+    max-width: 100%;
+  }
+
+  .hotbar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

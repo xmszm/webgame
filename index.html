@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="WebGame 游戏聚合入口。" />
+    <title>WebGame 游戏聚合</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #101417;
+        --panel: #171d21;
+        --line: #344049;
+        --text: #edf3ee;
+        --muted: #a9b5ad;
+        --accent: #59b36b;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100dvh;
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      a:focus-visible {
+        outline: 3px solid #76d083;
+        outline-offset: 3px;
+      }
+
+      .shell {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: max(18px, env(safe-area-inset-top)) 0 max(18px, env(safe-area-inset-bottom));
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+      }
+
+      .brand-mark {
+        width: 28px;
+        height: 28px;
+        border: 3px solid #6bbf59;
+        border-radius: 6px;
+        background: #5cab49;
+        box-shadow:
+          inset 0 -12px 0 #7a5430,
+          inset -8px 0 0 rgb(0 0 0 / 0.14);
+      }
+
+      .hero {
+        padding: 20px 0 18px;
+      }
+
+      .eyebrow {
+        margin: 0 0 6px;
+        color: #76d083;
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2rem, 5vw, 3.8rem);
+        line-height: 1;
+        text-wrap: balance;
+      }
+
+      .game-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 14px;
+        margin-top: 22px;
+      }
+
+      .game-card {
+        display: grid;
+        gap: 12px;
+        min-height: 180px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        padding: 16px;
+      }
+
+      .game-card:hover {
+        border-color: var(--accent);
+      }
+
+      .game-card__thumb {
+        width: 64px;
+        height: 64px;
+        border: 3px solid #6bbf59;
+        border-radius: 8px;
+        background: #5cab49;
+        box-shadow:
+          inset 0 -28px 0 #7a5430,
+          inset -18px 0 0 rgb(0 0 0 / 0.14);
+      }
+
+      .game-card__thumb--sol {
+        border-color: #e4cf69;
+        background: #71b84e;
+        box-shadow:
+          inset 0 -22px 0 #8a6037,
+          inset -20px 0 0 rgb(0 0 0 / 0.16),
+          inset 0 8px 0 #8fd260;
+      }
+
+      .game-card h2,
+      .game-card p {
+        margin: 0;
+      }
+
+      .game-card h2 {
+        font-size: 1.35rem;
+        text-wrap: balance;
+      }
+
+      .game-card p {
+        color: var(--muted);
+        text-wrap: pretty;
+      }
+
+      .game-card__meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .game-card__meta span {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 6px 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="WebGame 首页">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>WebGame</span>
+        </a>
+      </header>
+
+      <main>
+        <section class="hero" aria-labelledby="page-title">
+          <p class="eyebrow">游戏聚合</p>
+          <h1 id="page-title">选择游戏</h1>
+        </section>
+
+        <section class="game-list" aria-label="游戏列表">
+          <a class="game-card" href="./5.6-sol我的世界/">
+            <span class="game-card__thumb game-card__thumb--sol" aria-hidden="true"></span>
+            <div>
+              <h2>5.6-sol我的世界</h2>
+              <p>第一人称方块世界，支持探索、采掘、建造、触控操作和自动存档。</p>
+            </div>
+            <span class="game-card__meta" aria-label="游戏特性">
+              <span>Three.js</span>
+              <span>桌面与触控</span>
+              <span>自动存档</span>
+            </span>
+          </a>
+
+          <a class="game-card" href="./gpt-5.5我的世界/">
+            <span class="game-card__thumb" aria-hidden="true"></span>
+            <div>
+              <h2>gpt-5.5我的世界</h2>
+              <p>方块沙盒、随机世界、挖掘、放置、热栏和本地存档。</p>
+            </div>
+            <span class="game-card__meta" aria-label="游戏特性">
+              <span>Canvas</span>
+              <span>单人</span>
+              <span>可存档</span>
+            </span>
+          </a>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
