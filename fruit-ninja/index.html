@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#151a18" />
+    <meta name="description" content="水果忍者：刀锋果园，多关卡 Web 端切水果动作游戏。" />
+    <title>水果忍者：刀锋果园</title>
+  </head>
+  <body>
+    <main id="app">
+      <div id="game-stage" aria-hidden="true"></div>
+
+      <section id="menu-screen" class="screen menu-screen" aria-labelledby="game-title">
+        <div class="menu-inner">
+          <header class="brand-lockup">
+            <p class="kicker">BLADE ORCHARD</p>
+            <h1 id="game-title">水果忍者<span>刀锋果园</span></h1>
+          </header>
+
+          <div id="mode-tabs" class="mode-tabs" role="tablist" aria-label="游戏模式">
+            <button class="mode-tab is-active" type="button" role="tab" aria-selected="true" data-mode="adventure"><strong>冒险</strong><span>六重试炼</span></button>
+            <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="arcade"><strong>街机</strong><span>90 秒高分</span></button>
+            <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="zen"><strong>禅境</strong><span>无炸弹连斩</span></button>
+            <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="survival"><strong>生存</strong><span>极限三命</span></button>
+          </div>
+
+          <div id="level-panel" class="level-panel" role="tabpanel" aria-label="冒险关卡">
+            <div class="section-heading"><h2>选择试炼</h2><span id="progress-copy">已解锁 1 / 6</span></div>
+            <div id="level-list" class="level-list"></div>
+          </div>
+
+          <div id="quick-panel" class="quick-panel" hidden>
+            <p id="mode-caption"></p>
+          </div>
+
+          <button id="start-button" class="primary-command" type="button"><i data-lucide="play" aria-hidden="true"></i><span>开始试炼</span></button>
+        </div>
+        <a class="home-link" href="../" aria-label="返回 WebGame 游戏列表"><i data-lucide="arrow-left" aria-hidden="true"></i><span>游戏列表</span></a>
+      </section>
+
+      <section id="hud" class="hud" aria-label="游戏状态" hidden>
+        <div class="hud-top">
+          <div class="score-block"><span>分数</span><strong id="score-value">0</strong></div>
+          <div class="objective-block"><strong id="run-name">初试锋芒</strong><span id="objective-value">0 / 500</span><div class="progress-track"><span id="score-progress"></span></div></div>
+          <div class="time-block"><span>剩余</span><strong id="time-value">45</strong></div>
+        </div>
+        <div class="lives" id="lives" aria-label="剩余生命 3"></div>
+        <div id="combo" class="combo" aria-live="polite"></div>
+        <div class="hud-actions">
+          <button id="sound-button" class="icon-button" type="button" aria-label="关闭声音" title="声音"><i data-lucide="volume-2" aria-hidden="true"></i></button>
+          <button id="pause-button" class="icon-button" type="button" aria-label="暂停游戏" title="暂停"><i data-lucide="pause" aria-hidden="true"></i></button>
+        </div>
+      </section>
+
+      <dialog id="pause-dialog" class="game-dialog" aria-labelledby="pause-title">
+        <p class="dialog-kicker">刀锋入鞘</p>
+        <h2 id="pause-title">游戏暂停</h2>
+        <div class="dialog-stats"><span>当前得分</span><strong id="pause-score">0</strong></div>
+        <div class="dialog-actions">
+          <button id="resume-button" class="primary-command" type="button"><i data-lucide="play" aria-hidden="true"></i>继续</button>
+          <button id="restart-button" class="secondary-command" type="button"><i data-lucide="rotate-ccw" aria-hidden="true"></i>重新开始</button>
+          <button id="exit-button" class="quiet-command" type="button"><i data-lucide="log-out" aria-hidden="true"></i>返回模式选择</button>
+        </div>
+      </dialog>
+
+      <dialog id="result-dialog" class="game-dialog result-dialog" aria-labelledby="result-title">
+        <p id="result-kicker" class="dialog-kicker">试炼完成</p>
+        <div id="rank-value" class="rank-value" aria-label="评级 B">B</div>
+        <h2 id="result-title">锋芒初现</h2>
+        <div class="result-grid">
+          <div><span>最终得分</span><strong id="result-score">0</strong></div>
+          <div><span>最高连斩</span><strong id="result-combo">0</strong></div>
+          <div><span>切中水果</span><strong id="result-sliced">0</strong></div>
+        </div>
+        <div class="dialog-actions">
+          <button id="next-button" class="primary-command" type="button"><i data-lucide="chevron-right" aria-hidden="true"></i><span>下一关</span></button>
+          <button id="result-restart-button" class="secondary-command" type="button"><i data-lucide="rotate-ccw" aria-hidden="true"></i>再来一次</button>
+          <button id="result-exit-button" class="quiet-command" type="button">返回模式选择</button>
+        </div>
+      </dialog>
+
+      <div id="sr-status" class="sr-only" role="status" aria-live="polite"></div>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

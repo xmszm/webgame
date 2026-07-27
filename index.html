@@ -130,6 +130,40 @@
           inset 0 8px 0 #8fd260;
       }
 
+      .game-card__thumb--fruit {
+        position: relative;
+        border-color: #f09945;
+        border-radius: 50%;
+        background: #e44b3d;
+        box-shadow:
+          inset 13px 10px 0 #ff8b70,
+          inset -10px -12px 0 #a9212b;
+      }
+
+      .game-card__thumb--fruit::before {
+        position: absolute;
+        top: -9px;
+        left: 31px;
+        width: 9px;
+        height: 20px;
+        border-radius: 4px;
+        background: #705037;
+        content: "";
+        transform: rotate(22deg);
+      }
+
+      .game-card__thumb--fruit::after {
+        position: absolute;
+        top: -4px;
+        left: 39px;
+        width: 21px;
+        height: 12px;
+        border-radius: 50%;
+        background: #65aa57;
+        content: "";
+        transform: rotate(-22deg);
+      }
+
       .game-card h2,
       .game-card p {
         margin: 0;
@@ -176,6 +210,19 @@
         </section>
 
         <section class="game-list" aria-label="游戏列表">
+          <a class="game-card" href="./fruit-ninja/">
+            <span class="game-card__thumb game-card__thumb--fruit" aria-hidden="true"></span>
+            <div>
+              <h2>水果忍者：刀锋果园</h2>
+              <p>爽快挥砍、六重冒险关卡与街机、禅境、生存模式。</p>
+            </div>
+            <span class="game-card__meta" aria-label="游戏特性">
+              <span>Phaser 3</span>
+              <span>桌面与触控</span>
+              <span>四种模式</span>
+            </span>
+          </a>
+
           <a class="game-card" href="./5.6-sol我的世界/">
             <span class="game-card__thumb game-card__thumb--sol" aria-hidden="true"></span>
             <div>
