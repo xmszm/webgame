@@ -1,0 +1,26 @@
+{
+  "name": "webgame-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "packageManager": "npm@11.18.0",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "workspaces": [
+    "5.6-sol我的世界",
+    "fruit-ninja"
+  ],
+  "scripts": {
+    "build": "npm run build:apps && node scripts/assemble-dist.mjs && node scripts/verify-dist.mjs",
+    "build:apps": "npm run build --workspace=5.6-sol-minecraft && npm run build --workspace=blade-orchard-fruit-ninja",
+    "check": "npm run lint --workspaces --if-present && npm run test --workspaces --if-present && npm run build && npm run test:deploy",
+    "test:deploy": "node scripts/smoke-dist.mjs",
+    "test:e2e": "npm run test:e2e --workspaces --if-present",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.0",
+    "vite": "^8.1.5"
+  }
+}
