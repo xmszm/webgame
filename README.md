@@ -1,7 +1,8 @@
 # WebGame Monorepo
 
-一个可统一安装、构建和部署的 Web 游戏集合。根入口包含三款游戏：
+一个可统一安装、构建和部署的 Web 游戏集合。根入口包含四款游戏：
 
+- `starbound-brothers`：Phaser 3 原创超级马里奥式横版平台游戏。
 - `fruit-ninja`：Phaser 3 水果忍者游戏。
 - `5.6-sol我的世界`：Three.js 第一人称方块游戏。
 - `gpt-5.5我的世界`：原生 Canvas 方块游戏。
@@ -24,6 +25,7 @@ npm run build
 dist/
 ├─ index.html
 ├─ fruit-ninja/
+├─ starbound-brothers/
 ├─ 5.6-sol我的世界/
 └─ gpt-5.5我的世界/
 ```
@@ -42,7 +44,7 @@ npm run test:deploy
 npm run test:e2e
 ```
 
-`npm run check` 会运行所有 workspace 的 lint、单元测试、类型检查、生产构建，并通过 Playwright 打开聚合站和三款游戏，检查部署路由、画布、控制台及资源请求。`npm run test:deploy` 可单独复验已有 `dist/`，`npm run test:e2e` 会额外运行两个现代游戏各自的完整交互测试。
+`npm run check` 会运行所有 workspace 的 lint、单元测试、类型检查、生产构建，并通过 Playwright 打开聚合站和四款游戏，检查部署路由、画布、控制台及资源请求。`npm run test:deploy` 可单独复验已有 `dist/`，`npm run test:e2e` 会额外运行三个现代游戏各自的完整交互测试。
 
 ## 部署
 

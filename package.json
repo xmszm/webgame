@@ -9,11 +9,12 @@
   },
   "workspaces": [
     "5.6-sol我的世界",
-    "fruit-ninja"
+    "fruit-ninja",
+    "starbound-brothers"
   ],
   "scripts": {
     "build": "npm run build:apps && node scripts/assemble-dist.mjs && node scripts/verify-dist.mjs",
-    "build:apps": "npm run build --workspace=5.6-sol-minecraft && npm run build --workspace=blade-orchard-fruit-ninja",
+    "build:apps": "npm run build --workspace=5.6-sol-minecraft && npm run build --workspace=blade-orchard-fruit-ninja && npm run build --workspace=starbound-brothers-platformer",
     "check": "npm run lint --workspaces --if-present && npm run test --workspaces --if-present && npm run build && npm run test:deploy",
     "test:deploy": "node scripts/smoke-dist.mjs",
     "test:e2e": "npm run test:e2e --workspaces --if-present",

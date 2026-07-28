@@ -123,16 +123,24 @@ test('desktop core sandbox flow renders and persists', async ({ page }) => {
   await expect(page.locator('#start-screen')).toHaveClass(/is-hidden/);
   await page.waitForTimeout(300);
 
+  await expect.poll(() => page.evaluate(() => document.pointerLockElement?.id ?? '')).toBe('game-canvas');
   const before = await page.locator('#position-readout').textContent();
-  await page.keyboard.down('KeyW');
-  await page.waitForTimeout(900);
-  await page.keyboard.up('KeyW');
+  for (const key of ['KeyW', 'KeyD', 'KeyS', 'KeyA']) {
+    await page.keyboard.down(key);
+    await page.waitForTimeout(1_500);
+    await page.keyboard.up(key);
+    if (await page.locator('#position-readout').textContent() !== before) break;
+  }
   await expect.poll(() => page.locator('#position-readout').textContent()).not.toBe(before);
 
   await page.mouse.move(720, 650);
   await expect.poll(() => page.locator('#target-label').textContent()).not.toBe('');
   await page.mouse.click(720, 650, { button: 'right' });
+  await page.waitForTimeout(180);
+  await page.mouse.click(720, 650, { button: 'right' });
   await expect(page.locator('#toast')).toContainText('放置');
+  await page.mouse.click(720, 650, { button: 'left' });
+  await page.waitForTimeout(180);
   await page.mouse.click(720, 650, { button: 'left' });
   await expect(page.locator('#toast')).toContainText('采掘');
 

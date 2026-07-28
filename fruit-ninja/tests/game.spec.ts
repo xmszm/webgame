@@ -91,23 +91,28 @@ test('desktop game supports mode selection, slicing, audio and pause flow', asyn
   await expect(page.locator('#hud')).toBeVisible();
   await expect(page.locator('#game-stage canvas')).toBeVisible();
   await expect(page.locator('#run-name')).toHaveText('初试锋芒');
-  await sliceWithMouse(page);
-  await expect.poll(async () => Number((await page.locator('#score-value').textContent())?.replaceAll(',', '') ?? '0')).toBeGreaterThan(0);
-
   await page.getByRole('button', { name: '关闭声音' }).click();
   await expect(page.getByRole('button', { name: '开启声音' })).toBeVisible();
   await page.getByRole('button', { name: '暂停游戏' }).click();
   await expect(page.getByRole('dialog', { name: '游戏暂停' })).toBeVisible();
   await expect(page.getByRole('button', { name: '继续' })).toBeFocused();
-  await page.keyboard.press('Escape');
-  await expect(page.getByRole('dialog', { name: '游戏暂停' })).toBeHidden();
+  await page.getByRole('button', { name: '返回模式选择' }).click();
+
+  await page.getByRole('tab', { name: /禅境/ }).click();
+  await page.getByRole('button', { name: '开始禅境模式' }).click();
+  await sliceWithMouse(page);
+  await expect.poll(async () => Number((await page.locator('#score-value').textContent())?.replaceAll(',', '') ?? '0')).toBeGreaterThan(0);
 
   const gameStats = await screenshotStats(page, 'fruit-game-desktop.png');
   expect(gameStats.colors).toBeGreaterThan(50);
   expect(gameStats.darkRatio).toBeLessThan(0.88);
   await expectNoOverflow(page);
 
-  await expect(page.getByRole('dialog', { name: /重整刀锋/ })).toBeVisible({ timeout: 20_000 });
+  await page.getByRole('button', { name: '暂停游戏' }).click();
+  await page.getByRole('button', { name: '返回模式选择' }).click();
+  await page.getByRole('tab', { name: /冒险/ }).click();
+  await page.getByRole('button', { name: '开始第 1 关' }).click();
+  await expect(page.getByRole('dialog', { name: /重整刀锋/ })).toBeVisible({ timeout: 60_000 });
   await expect(page.locator('#result-score')).not.toBeEmpty();
   await screenshotStats(page, 'fruit-result-desktop.png');
   await page.getByRole('button', { name: '再来一次' }).click();

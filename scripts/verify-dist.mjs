@@ -11,6 +11,8 @@ const requiredFiles = [
   'fruit-ninja/index.html',
   'fruit-ninja/assets/apple.svg',
   'fruit-ninja/assets/dojo.svg',
+  'starbound-brothers/index.html',
+  'starbound-brothers/assets/ASSETS.md',
   'gpt-5.5我的世界/index.html',
   'gpt-5.5我的世界/src/main.js',
   'gpt-5.5我的世界/src/styles.css',
@@ -26,11 +28,11 @@ for (const relativePath of requiredFiles) {
 }
 
 const rootHtml = await readFile(path.join(output, 'index.html'), 'utf8');
-for (const gamePath of ['5.6-sol我的世界/', 'fruit-ninja/', 'gpt-5.5我的世界/']) {
+for (const gamePath of ['5.6-sol我的世界/', 'fruit-ninja/', 'starbound-brothers/', 'gpt-5.5我的世界/']) {
   if (!rootHtml.includes(`./${gamePath}`)) throw new Error(`Root index does not link to ${gamePath}`);
 }
 
-for (const appPath of ['5.6-sol我的世界', 'fruit-ninja']) {
+for (const appPath of ['5.6-sol我的世界', 'fruit-ninja', 'starbound-brothers']) {
   const appHtml = await readFile(path.join(output, appPath, 'index.html'), 'utf8');
   if (appHtml.includes('/src/') || appHtml.includes('src="/')) {
     throw new Error(`${appPath} still contains an unbuilt absolute source reference`);

@@ -1,5 +1,5 @@
 {
-  "name": "blade-orchard-fruit-ninja",
+  "name": "starbound-brothers-platformer",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -13,7 +13,7 @@
     "check": "npm run lint && npm run test && npm run build && npm run test:e2e"
   },
   "dependencies": {
-    "lucide": "^0.468.0",
+    "lucide": "^1.27.0",
     "phaser": "^3.90.0"
   },
   "devDependencies": {

@@ -130,6 +130,35 @@
           inset 0 8px 0 #8fd260;
       }
 
+      .game-card__thumb--platform {
+        position: relative;
+        overflow: hidden;
+        border-color: #fff4b7;
+        background: #75c8f4;
+        box-shadow: inset 0 -17px 0 #3f9f55, inset 0 -23px 0 #7b512d;
+      }
+
+      .game-card__thumb--platform::before {
+        position: absolute;
+        right: 11px;
+        bottom: 17px;
+        width: 5px;
+        height: 38px;
+        background: #f7f2d8;
+        content: "";
+      }
+
+      .game-card__thumb--platform::after {
+        position: absolute;
+        right: 15px;
+        top: 9px;
+        width: 25px;
+        height: 17px;
+        background: #e94132;
+        clip-path: polygon(100% 0, 100% 100%, 0 50%);
+        content: "";
+      }
+
       .game-card__thumb--fruit {
         position: relative;
         border-color: #f09945;
@@ -210,6 +239,19 @@
         </section>
 
         <section class="game-list" aria-label="游戏列表">
+          <a class="game-card" href="./starbound-brothers/">
+            <span class="game-card__thumb game-card__thumb--platform" aria-hidden="true"></span>
+            <div>
+              <h2>星跃兄弟：横版闯关</h2>
+              <p>原创超级马里奥式冒险，奔跑、跳跃、踩击敌人，穿越三段星光旅程。</p>
+            </div>
+            <span class="game-card__meta" aria-label="游戏特性">
+              <span>Phaser 3</span>
+              <span>桌面与触控</span>
+              <span>三段关卡</span>
+            </span>
+          </a>
+
           <a class="game-card" href="./fruit-ninja/">
             <span class="game-card__thumb game-card__thumb--fruit" aria-hidden="true"></span>
             <div>
