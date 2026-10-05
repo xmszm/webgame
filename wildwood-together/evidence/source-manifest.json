@@ -1,0 +1,236 @@
+{
+  "generatedAt": "2026-10-05T03:04:14.235Z",
+  "baseline": "Imported game workspace; parent repository package-lock.json included for dependency provenance.",
+  "files": [
+    {
+      "path": "index.html",
+      "size": 10711,
+      "sha256": "84567673cf2ac6ab7fe936428d051d03f55f29485f9adc7536773725c38ce646"
+    },
+    {
+      "path": "package.json",
+      "size": 627,
+      "sha256": "36293b84e49444e67fae4a1e82fff1ab8acc58d20f7b8fc2852724de2a39e7d3"
+    },
+    {
+      "path": "../package-lock.json",
+      "size": 146090,
+      "sha256": "cb88ace288709313fdf64c99d2813d95ee444b385c4fef34ca43690a904ce092"
+    },
+    {
+      "path": "vite.config.js",
+      "size": 84,
+      "sha256": "d7b81fad60f12520199f40566350f4c6eacb74fedc842b41bd2a58e48c145069"
+    },
+    {
+      "path": "INTEGRATION.md",
+      "size": 3334,
+      "sha256": "68978c81b2446b307899297486dff578f39c6d7bbfac2d9341802663172f5ffc"
+    },
+    {
+      "path": "eslint.config.js",
+      "size": 1095,
+      "sha256": "1409ef3dbbb028f5f4d69a52893042e3290f23d4be874615b5b8c8df0bd881b2"
+    },
+    {
+      "path": "playwright.config.js",
+      "size": 808,
+      "sha256": "356ffe761e0f5ef349975aeb948cb2fcd839c4da0bae168a953f686ccf5ea06c"
+    },
+    {
+      "path": "README.md",
+      "size": 7234,
+      "sha256": "6f9059d1093b14638d7a795e84f150f23ea5702b820862666dd13b2f4c2f69b7"
+    },
+    {
+      "path": "PRODUCT.md",
+      "size": 1319,
+      "sha256": "55e35515601beec0e29b6b0dab0949a8c44902cf222cf8895b868d1dbdd8d9d3"
+    },
+    {
+      "path": "PLAN.md",
+      "size": 2766,
+      "sha256": "0ff545cd61e36a79a4372b08d02fe27d7d2e4dc9b79456f79e1365d82d137a8a"
+    },
+    {
+      "path": "DESIGN.md",
+      "size": 2944,
+      "sha256": "c55adc6d5642866fb278dfd2e48384d8b7e7441b0412519ea90c223c43be0362"
+    },
+    {
+      "path": "server/index.js",
+      "size": 6506,
+      "sha256": "333b188e8834eb9837442867fa46ddc25b368f2677c33848f426b24789de9bda"
+    },
+    {
+      "path": "server/world.js",
+      "size": 11521,
+      "sha256": "6a18217c52b53f5a9a14592694c48a3cfeb2f7d7e0ad88105c2a1debd6576d6b"
+    },
+    {
+      "path": "src/icons.js",
+      "size": 3350,
+      "sha256": "d0296e8068a6b6f34a6e45f3a04be2cadb4ad649e43afc73421d22c9e0724dce"
+    },
+    {
+      "path": "src/main.js",
+      "size": 22802,
+      "sha256": "5800f24c4568718f1afae6f4da384d66f6c39160d7e603b41a1106d6e6373887"
+    },
+    {
+      "path": "src/renderer.js",
+      "size": 20895,
+      "sha256": "3dd21a4dcf0eca234da93d41bed08475e8ca868b07984378469c755906a4f142"
+    },
+    {
+      "path": "src/style.css",
+      "size": 20562,
+      "sha256": "28672e4722dfb44e7f3a0cb28f0d38ff861fb1e863dda46a387dde6573d29025"
+    },
+    {
+      "path": "tests/game.spec.js",
+      "size": 10426,
+      "sha256": "f913dc95138d2ba90930bdc74ad0a0f07e6fb73ae84de11833d98c41fa9adbcd"
+    },
+    {
+      "path": "tests/network.test.js",
+      "size": 3311,
+      "sha256": "1cc44e481d22435811dd09fbc7109e312a41acccf3bb6ee30bed437982145868"
+    },
+    {
+      "path": "tests/visual.spec.js",
+      "size": 3390,
+      "sha256": "be157dded795daafb184ae28ac5894464a22efcecc0de3a70edc296a1659805d"
+    },
+    {
+      "path": "tests/world.test.js",
+      "size": 7276,
+      "sha256": "d0390cb145fba0a2fcf4022c0a0140cd537e263a06c0d400afda3baadbecafd6"
+    },
+    {
+      "path": "scripts/artifact-check.js",
+      "size": 3958,
+      "sha256": "a3d32008e2bded4d7115b11073468c237704073c871db9a560315a4b584e0272"
+    },
+    {
+      "path": "scripts/extract-art.py",
+      "size": 2850,
+      "sha256": "da57b07e793ba712906089cb8491deb098b612bddea857996f535969dc8398b2"
+    },
+    {
+      "path": "public/art/berry.png",
+      "size": 222625,
+      "sha256": "bae1e196202e50bdcd3e956693a7849e39ec138f002a142de8c3a01ec96d4b62"
+    },
+    {
+      "path": "public/art/grass.png",
+      "size": 156718,
+      "sha256": "e8bd0fa2a914ce23acda96149ee08cb4d0be02e83928fce635d25fc60b1ba7bc"
+    },
+    {
+      "path": "public/art/item-axe.png",
+      "size": 166957,
+      "sha256": "5a309185adb94daf6b360e0414547b3783e9e0fa12ec537c36000e544da1e3c9"
+    },
+    {
+      "path": "public/art/item-berry.png",
+      "size": 133979,
+      "sha256": "3504920323026e7b24711f34f3ca01fec48ad1bcfcc7ab853ea298b001a32a33"
+    },
+    {
+      "path": "public/art/item-cooked.png",
+      "size": 148625,
+      "sha256": "fa1466929f1ffd40f8be76ecc6a8664a9ec3eaf63d2f920fe917261086060c1c"
+    },
+    {
+      "path": "public/art/item-flint.png",
+      "size": 106071,
+      "sha256": "a8410b925e900fabce38fa4745bc32f3cdad926321f60c58560c49fcc1140a51"
+    },
+    {
+      "path": "public/art/item-grass.png",
+      "size": 194451,
+      "sha256": "661b9c087813c12517f11ee5eb439405ffce710b9dff6b62972fe02b85e808a9"
+    },
+    {
+      "path": "public/art/item-stone.png",
+      "size": 163284,
+      "sha256": "9ef8726f08acea445dff8adfa30379586464ec3e14d042414a6861fc771a8302"
+    },
+    {
+      "path": "public/art/item-torch.png",
+      "size": 132906,
+      "sha256": "4510523ff76b9a8d3d7300ac0b82df8e73d8b4cafa08c8c6d53befdaf9ff18df"
+    },
+    {
+      "path": "public/art/item-wood.png",
+      "size": 156050,
+      "sha256": "75571dfbe7029c098c2eccfc9ce2e8341847e170acb679fda4eebcce29305f2a"
+    },
+    {
+      "path": "public/art/items.json",
+      "size": 1389,
+      "sha256": "188ae0508a28af3ee61763f6f6f90de55ab3707e5ce64e2d06dcab50081ddd31"
+    },
+    {
+      "path": "public/art/PROVENANCE.md",
+      "size": 1560,
+      "sha256": "715ca5a7ef22ff5978c681b87e0c69095c4cfa76b7651af754289e76da2dd3f5"
+    },
+    {
+      "path": "public/art/rock.png",
+      "size": 204124,
+      "sha256": "4b731edfc1c5d667f844ec69d44446c8c52dea2dfd49f602801a92f64a52eeb4"
+    },
+    {
+      "path": "public/art/sapling.png",
+      "size": 81681,
+      "sha256": "4dece58fcb88a903da4ef92a59c32019079f3050396f8b607a7f04af1b39917d"
+    },
+    {
+      "path": "public/art/spider.png",
+      "size": 134011,
+      "sha256": "0dc1615b585992bc8b75fc727dea8d657b446d368445c8328aeddbe53825faae"
+    },
+    {
+      "path": "public/art/sprites.json",
+      "size": 1333,
+      "sha256": "4ed8c1115d036006dd00483b974b4cfa5d85cc5c6cad0fcc552d0c88a82e07fb"
+    },
+    {
+      "path": "public/art/survivor.png",
+      "size": 138203,
+      "sha256": "db0d389126bcbf99552b6d2922ed3005b41d97d21f9dcd706550afbdd3386f18"
+    },
+    {
+      "path": "public/art/terrain.png",
+      "size": 3006362,
+      "sha256": "88a27522134772e8c8fb46cf78647cc1e0dfca3c0ef6e5c473eca9f2885cdc8d"
+    },
+    {
+      "path": "public/art/tree-sparse.png",
+      "size": 156658,
+      "sha256": "6cbe7c59ab38ba7ef9bea04ca2c49eab4e041e5d8331958e6e560f66d892c6b3"
+    },
+    {
+      "path": "public/art/tree.png",
+      "size": 245713,
+      "sha256": "e5a9e3f15c575c3392d91b9b2e07482f7199f9386a73ce6f3c26c147eccfa030"
+    },
+    {
+      "path": "public/fonts/fonts.css",
+      "size": 229,
+      "sha256": "7bfc5727dd0b8ee5374d7f48e6cc984fa21c082e07bbf136afa04697150a09a6"
+    },
+    {
+      "path": "public/fonts/OFL.txt",
+      "size": 4400,
+      "sha256": "a094514ca57cf8f9c5e8d8d1adab5d8cd3a377297ff016f9df2c05b3ecd77f0a"
+    },
+    {
+      "path": "public/fonts/zcool-xiaowei.woff2",
+      "size": 2632544,
+      "sha256": "0cb9ec2d33b20a5f1ff49e6ceee86daa044d026c2df1b584abe1e20e25efdd21"
+    }
+  ]
+}

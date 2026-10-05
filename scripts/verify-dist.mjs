@@ -6,6 +6,10 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const output = path.join(root, 'dist');
 const requiredFiles = [
   'index.html',
+  'wildwood-together/index.html',
+  'wildwood-together/art/survivor.png',
+  'wildwood-together/art/tree.png',
+  'wildwood-together/fonts/OFL.txt',
   '.nojekyll',
   '5.6-sol我的世界/index.html',
   'fruit-ninja/index.html',
@@ -32,7 +36,7 @@ for (const gamePath of ['5.6-sol我的世界/', 'fruit-ninja/', 'starbound-broth
   if (!rootHtml.includes(`./${gamePath}`)) throw new Error(`Root index does not link to ${gamePath}`);
 }
 
-for (const appPath of ['5.6-sol我的世界', 'fruit-ninja', 'starbound-brothers']) {
+for (const appPath of ['5.6-sol我的世界', 'fruit-ninja', 'starbound-brothers', 'wildwood-together']) {
   const appHtml = await readFile(path.join(output, appPath, 'index.html'), 'utf8');
   if (appHtml.includes('/src/') || appHtml.includes('src="/')) {
     throw new Error(`${appPath} still contains an unbuilt absolute source reference`);

@@ -1,0 +1,90 @@
+{
+  "tree": {
+    "path": "/art/tree.png",
+    "width": 344,
+    "height": 510,
+    "sourceBox": [
+      0,
+      0,
+      384,
+      522
+    ]
+  },
+  "tree-sparse": {
+    "path": "/art/tree-sparse.png",
+    "width": 223,
+    "height": 503,
+    "sourceBox": [
+      384,
+      0,
+      768,
+      522
+    ]
+  },
+  "berry": {
+    "path": "/art/berry.png",
+    "width": 333,
+    "height": 345,
+    "sourceBox": [
+      768,
+      0,
+      1152,
+      510
+    ]
+  },
+  "grass": {
+    "path": "/art/grass.png",
+    "width": 243,
+    "height": 385,
+    "sourceBox": [
+      1152,
+      0,
+      1536,
+      510
+    ]
+  },
+  "rock": {
+    "path": "/art/rock.png",
+    "width": 350,
+    "height": 336,
+    "sourceBox": [
+      0,
+      530,
+      384,
+      1024
+    ]
+  },
+  "sapling": {
+    "path": "/art/sapling.png",
+    "width": 170,
+    "height": 412,
+    "sourceBox": [
+      384,
+      530,
+      768,
+      1024
+    ]
+  },
+  "survivor": {
+    "path": "/art/survivor.png",
+    "width": 212,
+    "height": 462,
+    "sourceBox": [
+      768,
+      518,
+      1152,
+      1024
+    ]
+  },
+  "spider": {
+    "path": "/art/spider.png",
+    "width": 343,
+    "height": 245,
+    "sourceBox": [
+      1152,
+      530,
+      1536,
+      1024
+    ]
+  }
+}

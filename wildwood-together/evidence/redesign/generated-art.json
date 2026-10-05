@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "provider": "aigw-image (custom)",
+  "images": [
+    {
+      "path": "C:\\myApplication\\workspace\\mytest\\261004\\public\\art\\items-atlas.png",
+      "mimeType": "image/png"
+    }
+  ]
+}

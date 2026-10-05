@@ -1,0 +1,8 @@
+{
+  "noHorizontalOverflow": true,
+  "movement": true,
+  "craftError": true,
+  "bag": true,
+  "map": true,
+  "browserErrors": []
+}

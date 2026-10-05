@@ -28,6 +28,7 @@ await writeFile(path.join(output, '.nojekyll'), '', 'utf8');
 await copyBuiltApp(path.join('5.6-sol我的世界', 'dist'), '5.6-sol我的世界');
 await copyBuiltApp(path.join('fruit-ninja', 'dist'), 'fruit-ninja');
 await copyBuiltApp(path.join('starbound-brothers', 'dist'), 'starbound-brothers');
+await copyBuiltApp(path.join('wildwood-together', 'dist'), 'wildwood-together');
 
 const staticOutput = path.join(output, 'gpt-5.5我的世界');
 await mkdir(staticOutput, { recursive: true });

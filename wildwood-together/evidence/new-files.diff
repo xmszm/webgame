@@ -1,0 +1,2351 @@
+diff --git a/index.html b/index.html
+new file mode 100644
+--- /dev/null
++++ b/index.html
+@@ -0,0 +1,63 @@
++<!doctype html>
++<html lang="zh-CN">
++<head>
++  <meta charset="UTF-8" />
++  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
++  <meta name="theme-color" content="#202823" />
++  <meta name="description" content="荒野同行：原创中文网页联机生存游戏。探索、采集、制作，在夜幕降临前与朋友共同生起营火。" />
++  <title>荒野同行 · 联机生存</title>
++</head>
++<body>
++  <div id="app">
++    <header class="topbar">
++      <a class="brand" href="./" aria-label="荒野同行首页"><span class="brand-mark" data-icon="forest"></span><span>荒野同行<small>WILDWOOD · TOGETHER</small></span></a>
++      <div class="world-label"><span class="live-dot"></span><span>无尽荒野</span><span class="separator">/</span><span id="header-day">第 1 天</span></div>
++      <nav class="top-actions" aria-label="游戏菜单">
++        <span class="connection" id="connection">正在连接…</span>
++        <button id="room-button" class="button outline"><span data-icon="users"></span><span id="room-count">联机世界</span></button>
++        <button id="help-button" class="icon-button" aria-label="打开生存指南" title="生存指南"><span data-icon="book"></span></button>
++        <button id="sound-button" class="icon-button" aria-label="开启环境音效" title="开启环境音效"><span data-icon="sound"></span></button>
++      </nav>
++    </header>
++    <main class="game-layout">
++      <aside class="craft-panel" aria-label="制作面板">
++        <div class="panel-heading"><h2>制作</h2><span data-icon="tools"></span></div>
++        <p class="panel-subtitle">让双手创造生机</p>
++        <div class="craft-tabs" role="group" aria-label="配方分类"><button class="active" data-category="all">全部</button><button data-category="survival">生存</button><button data-category="tools">工具</button></div>
++        <div id="recipes" class="recipes"></div>
++        <div class="craft-note"><span data-icon="spark"></span><p>夜晚并不友好。<br>在天黑前，生起一堆火。</p></div>
++        <button class="text-button guide-link" id="guide-link"><span data-icon="book"></span>查阅生存指南 <span>↗</span></button>
++      </aside>
++      <section class="world-panel" aria-label="游戏世界">
++        <canvas id="world" tabindex="0" aria-label="荒野游戏地图。使用 WASD 或方向键移动，E 采集，F 攻击，点击地面移动。"></canvas>
++        <div class="scene-heading"><span class="scene-line"></span><div><h1>每一次日落，都是新的考验。</h1><p>收集资源，与同伴一起活到明天。</p></div></div>
++        <div class="world-location"><span data-icon="pin"></span><span id="location-label">林间空地</span><span class="coordinate" id="coordinates">1200, 1200</span></div>
++        <button id="map-button" class="world-map-button" aria-label="打开全景地图" title="全景地图 M"><span data-icon="map"></span></button>
++        <div class="objective"><span class="objective-symbol" data-icon="campfire"></span><div><span class="objective-caption">最初的火光</span><p id="objective-text">采集木材与干草，制作第一堆营火</p><div class="objective-progress"><span id="objective-progress"></span></div></div><span id="objective-count">0/6</span></div>
++        <div id="interaction" class="interaction hidden"><span id="interaction-name"></span><button id="gather-button"><kbd>E</kbd> 采集</button></div>
++        <div id="world-alert" class="world-alert hidden" role="status"></div>
++        <div class="scene-vignette"></div>
++        <div class="world-bottom"><span class="season"><span data-icon="leaf"></span>温和的秋日</span><div class="keyboard-hints"><span><kbd>W A S D</kbd> 移动</span><span><kbd>E</kbd> 采集</span><span><kbd>F</kbd> 攻击</span></div><button id="chat-button" class="text-button"><span data-icon="chat"></span><span>聊天</span><kbd>Enter</kbd></button></div>
++        <section class="chat-panel hidden" id="chat-panel" aria-label="世界聊天"><div class="chat-heading"><strong>世界的声音</strong><button id="close-chat" class="icon-button" aria-label="关闭聊天"><span data-icon="close"></span></button></div><div id="messages" class="messages" role="log" aria-live="polite"></div><form id="chat-form"><input id="chat-input" aria-label="聊天消息" placeholder="和同伴说点什么…" maxlength="100" autocomplete="off" /><button aria-label="发送消息"><span data-icon="send"></span></button></form></section>
++        <div class="touch-controls"><div class="touch-dpad"><button data-direction="up" aria-label="向上移动">↑</button><button data-direction="left" aria-label="向左移动">←</button><button data-direction="down" aria-label="向下移动">↓</button><button data-direction="right" aria-label="向右移动">→</button></div><div class="touch-actions"><button id="touch-gather" aria-label="采集"><span data-icon="hand"></span></button><button id="touch-attack" aria-label="攻击"><span data-icon="axe"></span></button></div></div>
++        <div id="death-panel" class="death-panel hidden"><h2>荒野记住了你的脚步。</h2><p>这次旅程暂时结束。重新出发，火光仍在等你。</p><button id="revive-button" class="button primary">重新出发</button></div>
++      </section>
++      <aside class="survival-panel" aria-label="生存状态">
++        <div class="day-section"><canvas id="clock" width="170" height="170" aria-hidden="true"></canvas><div class="day-center"><span id="clock-day">1</span><small>生存天数</small></div><div class="phase-label"><span data-icon="sun" id="phase-icon"></span><strong id="phase-name">白昼</strong><span id="phase-countdown">—</span></div></div>
++        <div class="status-heading"><h2>生存状态</h2><span id="player-name">旅人</span></div>
++        <div id="stats" class="stats"></div>
++        <div class="minimap-heading"><h2>周围的世界</h2><button id="expand-map" class="icon-button" aria-label="展开地图"><span data-icon="expand"></span></button></div>
++        <button class="minimap-button" id="minimap-button" aria-label="打开全景地图"><canvas id="minimap" width="200" height="150"></canvas><span>点击探索全景 <span>↗</span></span></button>
++        <div class="companions"><div class="status-heading"><h2>同行者</h2><span id="online-count">0 在线</span></div><div id="players"></div><button id="invite-button" class="text-button"><span data-icon="users"></span>邀请朋友同行 <span>↗</span></button></div>
++      </aside>
++    </main>
++    <footer class="inventory-bar"><div class="inventory-label"><span data-icon="bag"></span><div><strong>行囊</strong><small id="inventory-summary">旅途从这里开始</small></div></div><div class="inventory-slots" id="inventory"></div><div class="inventory-tail"><span id="torch-state">点击食物食用</span><span class="save-note">世界实时同步<span class="live-dot"></span></span></div></footer>
++    <div class="mobile-toolbar"><button id="mobile-craft"><span data-icon="tools"></span>制作</button><button id="mobile-bag"><span data-icon="bag"></span>行囊</button><span id="mobile-stats">生命 100 · 饥饿 100</span></div>
++    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
++  </div>
++  <dialog id="room-dialog"><div class="dialog-header"><span data-icon="forest"></span><button data-close="room-dialog" class="icon-button" aria-label="关闭世界设置"><span data-icon="close"></span></button></div><h2>一个人走得快，<br>一起走得更远。</h2><p>给自己一个名字，带上同伴，出发吧。</p><form id="join-form"><label for="name-input">旅人的名字</label><input id="name-input" maxlength="12" value="林间旅人" autocomplete="nickname" required /><label for="code-input">世界代码</label><div class="code-field"><input id="code-input" maxlength="12" placeholder="WILD01" pattern="[A-Za-z0-9]{4,12}" autocomplete="off" /><button type="button" id="copy-code" title="复制世界链接" aria-label="复制世界链接"><span data-icon="copy"></span></button></div><p class="field-note">相同代码进入同一世界，最多 8 位同行者。</p><button class="button primary" type="submit"><span data-icon="arrow"></span>进入这个世界</button><button class="button outline" id="create-world" type="button">创建全新世界</button></form><p class="room-note">原创生存联机体验 · 非《饥荒》官方移植</p></dialog>
++  <dialog id="help-dialog"><div class="dialog-header"><span data-icon="book"></span><button data-close="help-dialog" class="icon-button" aria-label="关闭指南"><span data-icon="close"></span></button></div><h2>把荒野变成家。</h2><p>世界并不等待你准备好。记住这几件事。</p><div class="guide-rows"><section><span data-icon="hand"></span><div><h3>探索与采集</h3><p>WASD／方向键移动，也可点击地面。靠近资源按 E；点击树木、草丛与岩石，会先走近再采集。触屏使用左下方向键。</p></div></section><section><span data-icon="campfire"></span><div><h3>在黑夜之前，留下火光</h3><p>3 木材 + 3 干草制作营火。营火提供 150 秒光照，抵御黑暗与爬虫。靠近营火可添柴、烤浆果。火把使用后照明 90 秒。</p></div></section><section><span data-icon="heart"></span><div><h3>照顾好自己</h3><p>饥饿持续下降，空腹会失去生命。点击行囊中的浆果食用；黑夜没有光时，生命与理智会快速下降。倒下后可在空地重新出发。</p></div></section><section><span data-icon="axe"></span><div><h3>不必独自面对</h3><p>F 攻击附近的爬虫，石斧提升伤害。复制世界链接邀请朋友，Enter 打开聊天，M 查看全景地图。共享资源先到先得，营火照亮所有同行者。</p></div></section></div><p class="room-note">每个昼夜 180 秒 · 世界无活跃玩家时暂停 · 不自动持久存档</p><button data-close="help-dialog" class="button primary">去迎接第一缕火光</button></dialog>
++  <dialog id="map-dialog"><div class="dialog-header"><h2>无尽荒野</h2><button data-close="map-dialog" class="icon-button" aria-label="关闭地图"><span data-icon="close"></span></button></div><canvas id="fullmap" width="650" height="560" aria-label="全世界地图，金色标记为自己，蓝色为同伴，红色为怪物"></canvas><div class="map-legend"><span><i class="gold"></i>你的位置</span><span><i class="blue"></i>同行者</span><span><i class="red"></i>暗影爬虫</span></div></dialog>
++  <script type="module" src="/src/main.js"></script>
++</body>
++</html>
+diff --git a/package.json b/package.json
+new file mode 100644
+--- /dev/null
++++ b/package.json
+@@ -0,0 +1,18 @@
++{
++  "name": "wildwood-together",
++  "version": "1.0.0",
++  "private": true,
++  "type": "module",
++  "scripts": {
++    "dev": "node server/index.js",
++    "build": "vite build",
++    "start": "node server/index.js --production",
++    "lint": "eslint .",
++    "test": "node --test tests/*.test.js",
++    "test:e2e": "playwright test",
++    "check:artifacts": "node scripts/artifact-check.js",
++    "validate": "npm run lint && npm test && npm run build && npm run test:e2e && npm run check:artifacts"
++  },
++  "dependencies": { "ws": "^8.18.0" },
++  "devDependencies": { "@playwright/test": "^1.55.0", "eslint": "^9.36.0", "vite": "^7.1.0" }
++}
+diff --git a/vite.config.js b/vite.config.js
+new file mode 100644
+--- /dev/null
++++ b/vite.config.js
+@@ -0,0 +1,2 @@
++import { defineConfig } from 'vite';
++export default defineConfig({ base: './' });
+diff --git a/INTEGRATION.md b/INTEGRATION.md
+new file mode 100644
+--- /dev/null
++++ b/INTEGRATION.md
+@@ -0,0 +1,55 @@
++# 放置与运行说明
++
++从 `C:\myApplication\workspace\mytest\261004` 复制到本仓库的 `wildwood-together/`。原项目保留不变，没有移动或删除用户文件。没有复制 node_modules、旧 dist、服务器 PID 或临时生成服务脚本；保留游戏源码、素材、授权、测试及可审查证据。
++
++## 仓库集成
++
++- 根 npm workspace：`wildwood-together`。
++- 根首页链接：`./wildwood-together/`。
++- 根 build：先构建各 workspace，再组装 `dist/wildwood-together/`。
++- 前端资源改为相对路径；Vite `base: './'`，字体由构建管理；不再误请求站点根 `/art/`、`/fonts/` 或 `/ws`。
++- 根 `npm run preview`：4173 端口运行 Node 权威世界与整个合集静态文件；WS 位于 `/wildwood-together/ws`，健康检查位于 `/wildwood-together/health`。
++- 原有静态页面和游戏行为保持不变；根验证新增游戏资源检查和双客户端同房冒烟检查。
++
++## 本地命令
++
++在合集根目录使用仓库要求的 Node 22 与 npm 11：
++
++```sh
++npm ci
++npm run check
++npm run preview
++```
++
++若本机 npm 是 10，可使用 `npx --yes npm@11.18.0 run check`。单独开发游戏：
++
++```sh
++npm run dev --workspace=wildwood-together
++```
++
++单独完整验证：
++
++```sh
++npm run validate --workspace=wildwood-together
++```
++
++单独生产服务默认仍在 3000 端口、根路径运行；合集中预览不占用 3000。测试端口 3140／3137 需空闲，不干扰原项目 3000 端口服务。
++
++## AWS／静态部署边界
++
++现有发布脚本仅发布静态 dist；此次本地放置没有调整云资源或生产发布服务。不得把静态页面能打开当成联机已经上线。
++
++以后如需 AWS 真联机，先按父目录 AGENTS.md 的流程测试、提交并推送，经用户授权配置持久 Node 服务和 Caddy 路由。可选两种运行方法：
++
++1. 后端也提供全站：在仓库根运行 `PORT=4173 npm run preview`，代理所有请求到该进程。
++2. 保持现有静态 Caddy 文件服务，仅代理游戏 WS／health：在 `wildwood-together/` 启动 `PORT=3001 HOST=127.0.0.1 GAME_BASE_PATH=/wildwood-together/ npm start`；Caddy 对 `/wildwood-together/ws`、`/wildwood-together/health` 使用 **保留路径** 的 reverse_proxy 到 127.0.0.1:3001，静态游戏文件仍由现有 Caddy 提供。不要使用会剥离前缀的 handle_path。
++
++跨域后端也支持构建变量 `VITE_GAME_SERVER_URL=wss://你的后端/路径/ws`。该地址必须是真实可达服务，不能把示例地址当作已部署端点。世界仍为内存保存，没有账号或持久存档；保持原游戏重启／断线行为。
++
++## 验证证据与提醒
++
++`wildwood-together/evidence/integration-check.log`记录全 workspace lint、测试、类型／构建和六页面部署冒烟通过；部署冒烟同时验证两个真实浏览器连接前缀路径的同一房间。
++
++安装依赖扫描报告 `evidence/dependency-audit.json`：现有依赖树有 4 告警（vitest / @vitest/mocker moderate，nanoid / brace-expansion high），没有擅自升级其他游戏依赖。原作风格生成素材的来源与授权边界见 `public/art/PROVENANCE.md`。
++
++没有提交、推送、启动云部署或改变生产定时器；后续部署仍按父目录 AGENTS.md 的正式脚本进行。
+diff --git a/eslint.config.js b/eslint.config.js
+new file mode 100644
+--- /dev/null
++++ b/eslint.config.js
+@@ -0,0 +1,9 @@
++export default [
++  { ignores: ['dist/**', 'node_modules/**', 'evidence/**', 'test-results/**', 'playwright-report/**', '.impeccable/**'] },
++  {
++    files: ['**/*.js'],
++    languageOptions: { ecmaVersion: 'latest', sourceType: 'module', globals: { console: 'readonly', process: 'readonly', Buffer: 'readonly', fetch: 'readonly', performance: 'readonly', setInterval: 'readonly', clearInterval: 'readonly', setTimeout: 'readonly', clearTimeout: 'readonly', URL: 'readonly', URLSearchParams: 'readonly' } },
++    rules: { 'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }], 'no-undef': 'error', 'no-unreachable': 'error', 'no-constant-condition': 'error', 'no-duplicate-imports': 'error', 'eqeqeq': 'error', 'no-var': 'error', 'prefer-const': 'error' },
++  },
++  { files: ['src/**/*.js', 'tests/**/*.spec.js'], languageOptions: { globals: { window: 'readonly', document: 'readonly', localStorage: 'readonly', location: 'readonly', history: 'readonly', navigator: 'readonly', WebSocket: 'readonly', ResizeObserver: 'readonly', requestAnimationFrame: 'readonly' } } },
++];
+diff --git a/playwright.config.js b/playwright.config.js
+new file mode 100644
+--- /dev/null
++++ b/playwright.config.js
+@@ -0,0 +1,12 @@
++import { defineConfig } from '@playwright/test';
++import { existsSync } from 'node:fs';
++const executablePath = process.env.PLAYWRIGHT_EXECUTABLE_PATH || (existsSync('C:/Program Files/Google/Chrome/Application/chrome.exe') ? 'C:/Program Files/Google/Chrome/Application/chrome.exe' : undefined);
++export default defineConfig({
++  testDir: './tests',
++  testMatch: '**/*.spec.js',
++  timeout: 90_000,
++  workers: 1,
++  reporter: [['list'], ['json', { outputFile: 'evidence/e2e-results.json' }]],
++  use: { baseURL: 'http://127.0.0.1:3140', headless: true, launchOptions: { executablePath }, screenshot: 'only-on-failure', trace: 'retain-on-failure' },
++  webServer: { command: 'npm start', env: { PORT: '3140', HOST: '127.0.0.1' }, url: 'http://127.0.0.1:3140/health', reuseExistingServer: false, timeout: 30_000 },
++});
+diff --git a/README.md b/README.md
+new file mode 100644
+--- /dev/null
++++ b/README.md
+@@ -0,0 +1,114 @@
++# 荒野同行 · Wildwood Together
++
++中文浏览器多人合作生存游戏，回应「饥荒联机网页版」的玩法意图。**原创独立实现，不是《饥荒联机版》的官方移植，不使用其专有素材，不兼容原作服务器。**
++
++![桌面游玩画面](evidence/desktop.png)
++
++## 运行
++
++需要 Node.js 22.12+（本机使用 22.22.2）与 npm。
++
++```sh
++npm ci
++npm run dev
++```
++
++打开 **http://localhost:3000** 即可直接进入默认世界。开发模式提供 Vite 热更新及同进程 WebSocket 服务。
++
++生产运行：
++
++```sh
++npm run build
++npm start
++```
++
++`PORT` 默认 `3000`，`HOST` 默认 `0.0.0.0`。例如 Bash：
++
++```sh
++HOST=127.0.0.1 PORT=8080 npm start
++```
++
++PowerShell：
++
++```powershell
++$env:PORT=8080
++npm start
++```
++
++### 真实联机
++
++- 两个浏览器／两台设备打开同一服务器地址，在「联机世界」输入相同世界代码。
++- 房间码支持 4–12 位字母或数字；不存在的代码会建立世界。「创建全新世界」生成随机代码。
++- 「邀请朋友同行」复制含 `?room=世界代码` 的链接。浏览器限制剪贴板时，可复制地址栏链接。
++- 局域网朋友使用 `http://服务器局域网IP:3000`，而不是 `localhost`。需允许防火墙入站 TCP 3000。
++- 跨网络访问需要你自己的可访问服务器／域名，推荐 HTTPS 反向代理，并转发 `/ws` 的 WebSocket Upgrade。HTTPS 页面自动使用 WSS。
++- 每个世界最多 8 人，最多 100 个世界。多人位置、资源存量、营火、怪物、时间和聊天由同一服务端同步；不是本地假人。
++
++## 操作
++
++| 动作 | 桌面 | 手机／触屏 |
++|---|---|---|
++| 移动 | WASD／方向键，或点击地面 | 点击地面／左下方向键 |
++| 采集 | 靠近资源按 E，或点击资源自动走近 | 点击资源／右下手形按钮 |
++| 制作 | 左栏点击配方 | 底栏「制作」打开配方 |
++| 食用／火把 | 点击背包，或快捷键 1–8 | 「行囊」打开背包，点击物品 |
++| 攻击 | F | 右下斧形按钮 |
++| 聊天 | Enter／聊天按钮 | 聊天按钮 |
++| 地图 | M／右上地图按钮 | 右上地图按钮 |
++| 生存指南 | 顶栏书本按钮 | 顶栏书本按钮 |
++
++## 生存规则
++
++- 2400 × 2400 世界包含树木、树枝、草丛、岩石、浆果和爬虫。空地周围有保证可达的初始资源。
++- 岩石同时产出石头和燧石；有石斧时树木采集翻倍。
++- 2 木材 + 2 燧石 → 石斧；2 干草 + 1 木材 → 火把；3 木材 + 3 干草 → 营火。
++- 1 浆果 → 烤浆果、1 木材 → 添柴，均需在燃烧的营火旁操作。
++- 原浆果恢复 18 饥饿／3 生命；烤浆果恢复 28 饥饿／8 生命，上限 100。
++- 一昼夜 180 秒：白昼 105 秒、黄昏 40 秒、黑夜 35 秒。饥饿每秒下降 0.13；饥饿归零开始掉血。
++- 黑夜没有光照时每秒失去 1.8 生命与 1.1 理智。营火照亮 185 世界单位内的所有玩家，燃烧 150 秒；添柴延长 60 秒。火把使用后持续 90 秒。
++- 爬虫白天在 210 单位、夜间在 650 单位内追击，靠近营火会退避。空手伤害 15，石斧伤害 30；击败奖励 2 浆果。
++- 资源采尽后 90 秒再生，击败的爬虫 150 秒再生。动作有服务端冷却，距离和材料均由服务器验证。
++- 倒下后点击「重新出发」，在初始空地恢复生命。携带物品保留，这是本游戏明确的规则，不模拟原作掉落系统。
++
++## 状态与部署边界
++
++世界保存在 **Node 进程内存**，无在线玩家时停止游戏时间。空世界 30 分钟后清理，服务器重启清空世界。断线会移除角色；自动重连为新的旅人，**不会恢复原背包与位置**，页面明确提示。不宣称持久存档或原作完整内容。
++
++服务器是唯一游戏规则权威，浏览器不能指定自己的生命、背包或直接瞬移。网络输入限制 4 KB，每连接每秒最多处理 40 条消息，聊天限频，所有玩家／聊天文本按纯文本渲染。该项目没有账号、私密房间密码、存档数据库或跨进程分布式世界；房间代码是邀请方式，不是权限凭证。公开部署应由反向代理提供 TLS、连接／IP 限流和访问控制。不要直接将开发模式暴露公网。
++
++## 验证
++
++```sh
++npm run validate
++```
++
++完整执行 ESLint、13 项单元／实际 WebSocket 网络测试、Vite 生产构建及 5 项 Playwright 浏览器测试。JS 项目不设置虚假的 TypeScript 类型检查；ESLint 负责未定义变量及代码错误检查，测试验证运行规则。
++
++浏览器测试默认使用本机 Chrome；无系统 Chrome 时先 `npx playwright install chromium`。也可设置 `PLAYWRIGHT_EXECUTABLE_PATH`。测试占用 3140 和 3137 端口；请先停止其他占用进程。联机测试实际等待昼夜转换，因此完整验证通常约 3 分钟。
++
++- `tests/world.test.js`：制作、采集、再生、移动边界、昼夜、饥饿、死亡、战斗、房间、聊天。
++- `tests/network.test.js`：生产 WebSocket，8 人上限、房间隔离、错误房间保留旧连接、非法输入和超大载荷。
++- `tests/game.spec.js`：两个独立浏览器上下文加入同一房间，真实操作移动／采集／营火／聊天／断开，并进入黑夜检验共同庇护；手机操作；创建世界与 XSS 防护；断网重连。
++- `evidence/`：桌面、手机、夜间截图、多人证据 JSON、浏览器测试报告及验证日志。
++
++## 文件
++
++```
++server/index.js     HTTP / WebSocket / 房间生命周期
++server/world.js     权威世界规则和配方（无浏览器依赖）
++src/main.js         网络客户端、DOM 状态、输入与交互
++src/renderer.js     等距 Canvas 世界、动态光照、地图与时钟
++src/icons.js        原创统一线性 SVG 图标
++src/style.css      桌面和触屏布局
++public/fonts/      自托管字体及授权
++```
++
++字体 ZCOOL XiaoWei 使用 SIL Open Font License 1.1，授权见 `public/fonts/OFL.txt`。原字体来自 Google Fonts 项目，本地转换为 WOFF2，保留全字符集。游戏对象采用本地生成并提取的透明手绘 PNG，美术来源与生成提示见 `public/art/PROVENANCE.md`；运行不依赖外部图像服务。未提取原作贴图或源码，不冒充官方移植。
++
++## 本轮画面重做
++
++撤掉网页式大侧栏，改为全屏手绘森林、边缘制作栏、右上日夜与生存 HUD、底部绘制物品行囊。人物分关节走路，采集、攻击、受击反馈由服务器动作时间戳触发；对象点击按透明精灵的真实墨迹判定。`evidence/redesign/` 包含生成提示、透明底检查、动作录屏、性能采样与原作截图比对。视觉是否满足用户要求仍需用户确认，不以测试通过宣称与原作完全一致。
++
++## 合集内使用
++
++本目录已接入父目录 npm workspaces，安装与锁文件由父目录统一管理。请优先从父目录运行 `npm ci`、`npm run check`、`npm run preview`。合集中地址为 `/wildwood-together/`，WebSocket 自动连接相同前缀的 `ws` 路径；运行、代理与静态部署限制详见 `INTEGRATION.md`。
+diff --git a/PRODUCT.md b/PRODUCT.md
+new file mode 100644
+--- /dev/null
++++ b/PRODUCT.md
+@@ -0,0 +1,35 @@
++# Product
++
++<!-- impeccable:product-schema 1 -->
++
++## Platform
++
++web
++
++## Product Purpose
++
++用户请求「饥荒联机网页版」。完成目标要求可游玩的中文生存游戏与真实多人联机，而非静态概念页面。
++
++## Capabilities and Constraints
++
++探索、采集、物品、制作、生存状态、昼夜危险、共享世界。保留用户文件（初始目录为空）。不使用原作专有角色、名称或美术来冒充官方移植。
++
++## Stack
++
++本轮实现选择（尚非用户指定）：原生浏览器 JavaScript / Canvas，Node.js / WebSocket 服务端权威世界，Vite 构建。用户未指定框架或部署平台。
++
++## Users
++
++推定：希望通过浏览器与朋友共同玩生存游戏的中文用户。支持键盘鼠标和触屏。
++
++## Operating Context
++
++推定：单 Node 进程运行，朋友通过房间码或同一网址连接。世界在进程内保存，不宣称持久存档或兼容原作服务器。
++
++## Evidence on Hand
++
++初始目录为空；没有原作源码、授权素材或现成 CI。将创建单元测试、真实浏览器双客户端测试及截图证据。
++
++## Open Decisions
++
++原作内容精确复刻、特定框架、公开部署与美术授权均未由用户指定。本实现是独立原创生存联机游戏，不宣称原作全量功能或官方移植。
+diff --git a/PLAN.md b/PLAN.md
+new file mode 100644
+--- /dev/null
++++ b/PLAN.md
+@@ -0,0 +1,27 @@
++# 实施与验收计划
++
++1. 搭建 Node / WebSocket 服务端权威房间、确定性地图、移动/采集/制作/生存/战斗规则。
++2. 实现中文 Canvas 世界与可访问 DOM 工具栏：真实数据、房间、背包、制作、聊天、地图、帮助和触屏操作。
++3. 单元测试校验资源距离、消耗/收益、昼夜危险、生存/死亡、房间隔离、非法输入；双真实浏览器检验加入、移动、采集、共享营火、聊天、断线。
++4. lint、构建和全量 validate。捕获桌面与移动截图，检查可读性/布局/交互/浏览器错误。
++5. 文档说明安装、运行、远程连接、安全与实际行为；以 evidence/ 下的命令日志、截图和审计逐项核对目标。
++
++## 界面方向（开发记录，不随应用发布）
++
++候选来源：野外手册、木刻剧场、地形沙盘、露营装备面板、植物标本册、夜间天文图、森林桌游。采用森林桌游：世界占据中心，实体式资源与角色、平整暗色边栏、暖金行动色。
++种子 0923de17 对应第七候选。鼓机启发明确的时序日夜；光谱启发状态不仅靠颜色；粉丝页不适用于操作；木刻启发美术强度；胶片启发场景边缘克制；重力花园强化动态世界。未请求委派，不调用子代理；本轮采用直接代码实现，没有用户确认的持久构建路径设置。
++
++THESIS：游戏本身就是首屏，不以营销或卡片阵列替代游玩。
++OWN-WORLD：深松墨色、苔绿地形、金色选择，手制等距游戏对象，清晰 DOM 操作区。
++STORY：观察生存状态，走向资源，采集制作，并与真正在线的玩家共同建营。
++FIRST VIEWPORT：64px 顶栏，左侧窄制作工具，中心大世界，右侧生存与小地图，底部背包，主要动作在世界内。
++FORM：森林桌游，第七候选，种子 0923de17。签名动作是跟随角色移动的等距场景与营火动态光域。
++FINISH：对功能、桌面/移动渲染和验证产物作直接审查，记录 DESIGN.md 和目标审计；不宣称未经独立审核的结论。
++
++## 当前重做进度
++
++- 原版源码保存 `evidence/redesign-baseline-src/` 和 baseline HTML。
++- 真实生成世界、物品与地表素材；完成白底提取与 alpha 检查。
++- 重写渲染与 HUD，保留权威规则；加入动作同步和 alpha 命中；旧测试狭窄坐标轮询曾漏过回程阈值，改为单向越界阈值，未改变游戏速度。
++- 双浏览器采集／共享营火／真实黑夜测试已通过；手机／重连／创建世界通过；动画／性能用例通过。
++- 剩余：最终完整 validate、最终产物审计和真实预览提交用户确认。未收到视觉批准前目标不完成。
+diff --git a/DESIGN.md b/DESIGN.md
+new file mode 100644
+--- /dev/null
++++ b/DESIGN.md
+@@ -0,0 +1,28 @@
++# 荒野同行 · 本轮重做系统
++
++用户拒绝上一版几何森林／网站侧栏，明确要求《饥荒》一样的效果。旧设计不再具有视觉权威。新画面是否达标，等待用户对真实运行截图与体验确认，不用自动测试代替视觉批准。
++
++## 首屏与全局构图
++
++Canvas 世界占满整个浏览器视口。左缘为窄制作图标，右上是分段日夜盘与生命／饥饿／理智标记，底部为绘制物品图标的背包。房间、指南、音效不再占一条网页导航栏，而是叠在左上角。地图与聊天保留功能。手机仍提供独立方向和动作键，底部制作切换，背包始终可见。
++
++## 美术与色彩
++
++生成手绘透明精灵，不再用 Canvas 多边形近似树木／角色：两种常青树、灌木、干草、岩石、树枝、幸存者与爬虫，8 个物品图标。强墨线、交叉排线、不对称轮廓与暗橄榄／赭色构成图像语言。地表来自完整绘制纹理，用相邻镜像纹理与不规则地块缓存避免上一版菱形色块。
++
++对照实际 Steam 公开原作截图：粗黑轮廓、头大身细的角色、不规则树枝、世界沉浸式构图与局部营火光照已落实；不宣称拥有原作全部角色动画帧、内容或官方资源。生成提示与来源见 `public/art/PROVENANCE.md`。
++
++## 动作与反馈
++
++服务器通过玩家 action、资源 hitAt、怪物 hitAt 和 hurtAt 同步采集／制作／使用／攻击／受击时间。客户端平滑玩家坐标，四肢独立摆动；采集弯身、攻击挥动、受击偏移／变色，资源短暂摇晃、命中粒子、树草微风、火焰抖动与余烬构成行为反馈。每位持火把玩家均贡献世界光源；夜间营火动态径向光照。前景树遮住自己时变淡。
++
++## 交互与可访问性
++
++对象命中读取实际 PNG alpha，而非整块透明矩形，防止点草却点到后方树。对话框、键盘、触屏与聊天纯文本安全规则保留。素材失败显示错误而不是空白；data-assets 状态用于验收。减少动态偏好关闭装饰微风／粒子与 UI 过渡；关键游戏状态仍实时显示。所有状态有数字与标签，不单靠颜色。
++
++## 验证记录
++
++`tests/game.spec.js`：双浏览器真实动作与共享世界，增加 walk／gather 与同行者动作校验、真实录屏；桌面／手机／夜间截图。
++`tests/visual.spec.js`：全屏尺寸、窄制作 HUD、绘制物品、协议快照驱动的攻击／受击渲染与 90 帧性能采样。快照驱动样例仅用于特定动画覆盖，不代替真实多人测试。
++本机 Chrome 1280×800 第一轮性能：中位 16.6ms，95 分位 17.2ms，无页面错误。只代表本机，不承诺所有设备帧率。
++直接打开检查 alpha-preview、items-preview、desktop、mobile、night 和 attack-hit。机械检测只剩不解析外部 CSS 的 flat-type-hierarchy 提示，实际显示字体有层级。
+diff --git a/server/index.js b/server/index.js
+new file mode 100644
+--- /dev/null
++++ b/server/index.js
+@@ -0,0 +1,112 @@
++import http from 'node:http';
++import { readFile } from 'node:fs/promises';
++import path from 'node:path';
++import { fileURLToPath } from 'node:url';
++import { randomBytes, randomUUID } from 'node:crypto';
++import { WebSocketServer, WebSocket } from 'ws';
++import { World } from './world.js';
++
++const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
++const production = process.argv.includes('--production');
++const port = Number(process.env.PORT || 3000);
++const host = process.env.HOST || '0.0.0.0';
++const basePath = process.env.GAME_BASE_PATH || '/';
++if (!/^\/(?:[a-zA-Z0-9_-]+\/)*$/.test(basePath)) throw new Error('GAME_BASE_PATH must start and end with /');
++const staticRoot = process.env.SITE_ROOT ? path.resolve(process.env.SITE_ROOT) : path.join(root, 'dist');
++const rooms = new Map();
++const vite = production ? null : await (await import('vite')).createServer({ root, server: { middlewareMode: true }, appType: 'spa' });
++const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.woff2': 'font/woff2', '.json': 'application/json' };
++const server = http.createServer(async (req, res) => {
++  res.setHeader('X-Content-Type-Options', 'nosniff');
++  if (req.url === '/favicon.ico') { res.writeHead(204); res.end(); return; }
++  if (req.url === `${basePath}health`) {
++    res.writeHead(200, { 'Content-Type': 'application/json' });
++    res.end(JSON.stringify({ status: 'ok', rooms: rooms.size }));
++    return;
++  }
++  if (vite) { vite.middlewares(req, res, () => { res.writeHead(404); res.end('Not found'); }); return; }
++  try {
++    const pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
++    const file = path.resolve(staticRoot, `.${pathname.endsWith('/') ? `${pathname}index.html` : pathname}`);
++    if (!file.startsWith(staticRoot + path.sep)) { res.writeHead(403); res.end(); return; }
++    const body = await readFile(file);
++    res.writeHead(200, { 'Content-Type': types[path.extname(file)] || 'application/octet-stream', 'Cache-Control': pathname.startsWith('/assets/') ? 'public, max-age=31536000, immutable' : 'no-cache' });
++    res.end(body);
++  } catch { res.writeHead(404); res.end('Not found'); }
++});
++const wss = new WebSocketServer({ server, path: `${basePath}ws`, maxPayload: 4096 });
++function send(socket, data) { if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify(data)); }
++function code() { return randomBytes(3).toString('hex').toUpperCase(); }
++function join(socket, message) {
++  const requested = typeof message.code === 'string' ? message.code.trim().toUpperCase() : '';
++  if (!message.create && requested && !/^[A-Z0-9]{4,12}$/.test(requested)) return send(socket, { type: 'error', message: '房间码须为 4–12 位字母或数字' });
++  const roomCode = message.create ? code() : requested || 'WILD01';
++  let room = rooms.get(roomCode);
++  if (!room) {
++    if (rooms.size >= 100) return send(socket, { type: 'error', message: '服务器世界数量已满，请进入现有世界或稍后重试' });
++    room = new World(roomCode, [...roomCode].reduce((sum, ch) => sum + ch.charCodeAt(0), 0));
++    rooms.set(roomCode, room);
++  }
++  if (room.players.size >= 8 && socket.room !== room) return send(socket, { type: 'error', message: '该世界已有 8 位玩家，请创建新世界' });
++  if (socket.room) socket.room.removePlayer(socket.playerId);
++  socket.room = room;
++  socket.playerId = randomUUID();
++  const name = typeof message.name === 'string' ? message.name.replace(/[\x00-\x1f]/g, '').trim().slice(0, 12) : '';
++  const player = room.addPlayer(socket.playerId, name || '旅人');
++  send(socket, { type: 'joined', id: socket.playerId, code: roomCode, name: player.name });
++  send(socket, { type: 'state', state: room.snapshot() });
++}
++wss.on('connection', socket => {
++  socket.alive = true;
++  socket.rateStart = Date.now();
++  socket.rateCount = 0;
++  socket.lastChat = 0;
++  socket.on('pong', () => { socket.alive = true; });
++  socket.on('message', raw => {
++    if (Date.now() - socket.rateStart > 1000) { socket.rateStart = Date.now(); socket.rateCount = 0; }
++    if (++socket.rateCount > 40) return;
++    let message;
++    try { message = JSON.parse(raw.toString()); } catch { return send(socket, { type: 'error', message: '无法识别消息' }); }
++    if (!message || typeof message !== 'object' || Array.isArray(message)) return;
++    if (message.type === 'join') { join(socket, message); return; }
++    if (!socket.room) return send(socket, { type: 'error', message: '请先加入世界' });
++    if (message.type === 'chat') {
++      if (Date.now() - socket.lastChat < 800) return send(socket, { type: 'error', message: '请稍候再发送消息' });
++      socket.lastChat = Date.now();
++    }
++    const result = socket.room.command(socket.playerId, message);
++    if (message.type !== 'input' && message.type !== 'move' || !result.ok) send(socket, { type: 'result', ...result });
++  });
++  socket.on('close', () => { socket.room?.removePlayer(socket.playerId); socket.room = null; });
++  socket.on('error', () => {});
++});
++let lastTick = performance.now();
++const tick = setInterval(() => {
++  const now = performance.now();
++  const dt = Math.min(0.25, (now - lastTick) / 1000);
++  lastTick = now;
++  for (const room of rooms.values()) if (room.players.size) room.tick(dt);
++  for (const socket of wss.clients) {
++    if (socket.room && socket.readyState === WebSocket.OPEN && socket.bufferedAmount < 128_000) send(socket, { type: 'state', state: socket.room.snapshot() });
++  }
++}, 100);
++const heartbeat = setInterval(() => {
++  for (const socket of wss.clients) {
++    if (!socket.alive) { socket.terminate(); continue; }
++    socket.alive = false;
++    socket.ping();
++  }
++  for (const [key, room] of rooms) if (!room.players.size && Date.now() - room.lastActive > 30 * 60 * 1000) rooms.delete(key);
++}, 30_000);
++server.listen(port, host, () => console.log(`荒野同行 · ${production ? 'production' : 'development'} http://${host}:${server.address().port}`));
++function shutdown() {
++  clearInterval(tick);
++  clearInterval(heartbeat);
++  for (const socket of wss.clients) socket.close(1001, 'Server shutting down');
++  wss.close();
++  vite?.close();
++  server.close(() => process.exit(0));
++  setTimeout(() => process.exit(0), 2000).unref();
++}
++process.on('SIGINT', shutdown);
++process.on('SIGTERM', shutdown);
+diff --git a/server/world.js b/server/world.js
+new file mode 100644
+--- /dev/null
++++ b/server/world.js
+@@ -0,0 +1,201 @@
++export const WORLD_SIZE = 2400;
++export const CYCLE_SECONDS = 180;
++export const ITEMS = {
++  wood: { name: '木材', description: '制作工具与营火的基础材料' },
++  grass: { name: '干草', description: '从草丛采集，用于火把与营火' },
++  stone: { name: '石头', description: '从岩石采集，用于加固营火' },
++  flint: { name: '燧石', description: '锐利的石片，用于制作斧头' },
++  berry: { name: '浆果', description: '食用恢复 18 饥饿与 3 生命' },
++  axe: { name: '石斧', description: '树木采集翻倍，攻击伤害提升' },
++  torch: { name: '火把', description: '使用后照亮周围 90 秒' },
++  cooked: { name: '烤浆果', description: '食用恢复 28 饥饿与 8 生命' },
++};
++export const RECIPES = {
++  axe: { name: '石斧', costs: { wood: 2, flint: 2 } },
++  torch: { name: '火把', costs: { grass: 2, wood: 1 } },
++  campfire: { name: '营火', costs: { wood: 3, grass: 3 } },
++  cooked: { name: '烤浆果', costs: { berry: 1 }, needsFire: true },
++  fuel: { name: '添柴', costs: { wood: 1 }, needsFire: true },
++};
++const TYPES = ['tree', 'grass', 'rock', 'berry', 'sapling'];
++const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
++const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
++export function phaseAt(time) {
++  const value = ((time % CYCLE_SECONDS) + CYCLE_SECONDS) % CYCLE_SECONDS;
++  return value < 105 ? 'day' : value < 145 ? 'dusk' : 'night';
++}
++function randomGenerator(seed) {
++  let state = seed >>> 0;
++  return () => { state = (state * 1664525 + 1013904223) >>> 0; return state / 4294967296; };
++}
++export class World {
++  constructor(code, seed = 137) {
++    this.code = code;
++    this.time = 24;
++    this.players = new Map();
++    this.objects = [];
++    this.fires = [];
++    this.enemies = [];
++    this.events = [];
++    this.sequence = 0;
++    this.lastActive = Date.now();
++    const random = randomGenerator(seed);
++    for (let i = 0; i < 210; i++) {
++      const x = 100 + random() * 2200;
++      const y = 100 + random() * 2200;
++      if (Math.hypot(x - 1200, y - 1200) < 160) continue;
++      this.objects.push({ id: `o${i}`, type: TYPES[Math.floor(random() * TYPES.length)], x, y, amount: 3, regrow: 0, variant: Math.floor(random() * 3) });
++    }
++    // A reproducible clearing ensures every new expedition has reachable basics.
++    const clearing = [['grass', 1250, 1180], ['sapling', 1150, 1200], ['grass', 1260, 1250], ['rock', 1130, 1130], ['tree', 1340, 1160], ['berry', 1170, 1280]];
++    clearing.forEach(([type, x, y], i) => this.objects.push({ id: `start${i}`, type, x, y, amount: 6, regrow: 0, variant: i % 3 }));
++    for (let i = 0; i < 7; i++) this.enemies.push({ id: `e${i}`, x: 420 + random() * 1550, y: 300 + random() * 550, health: 60, cooldown: 0, respawn: 0 });
++  }
++  addPlayer(id, name) {
++    const player = { id, name, x: 1200, y: 1200, health: 100, hunger: 100, sanity: 100, inventory: Object.fromEntries(Object.keys(ITEMS).map(key => [key, 0])), input: { x: 0, y: 0 }, target: null, torchUntil: 0, actionAt: -1, hurtAt: -1, dead: false, collected: 0, craftedFire: false, color: this.players.size % 4 };
++    this.players.set(id, player);
++    this.lastActive = Date.now();
++    this.event(`${name} 来到了荒野`, 'join');
++    return player;
++  }
++  event(text, kind = 'info') {
++    this.events.push({ id: ++this.sequence, text, kind });
++    if (this.events.length > 20) this.events.shift();
++  }
++  removePlayer(id) {
++    const player = this.players.get(id);
++    if (player) this.event(`${player.name} 离开了世界`, 'leave');
++    this.players.delete(id);
++    this.lastActive = Date.now();
++  }
++  fail(message) { return { ok: false, message }; }
++  command(id, message) {
++    const p = this.players.get(id);
++    if (!p) return this.fail('请先加入世界');
++    if (message.type === 'chat') {
++      const text = typeof message.text === 'string' ? message.text.trim().slice(0, 100) : '';
++      if (!text) return this.fail('消息不能为空');
++      this.event(`${p.name}：${text}`, 'chat');
++      return { ok: true };
++    }
++    if (message.type === 'revive') {
++      if (!p.dead) return this.fail('你还活着');
++      Object.assign(p, { x: 1200, y: 1200, health: 100, hunger: 80, sanity: 80, dead: false, target: null, input: { x: 0, y: 0 } });
++      return { ok: true, message: '你在出生地重新醒来' };
++    }
++    if (p.dead) return this.fail('你已倒下，请重新出发');
++    if (message.type === 'input') {
++      if (!Number.isFinite(message.x) || !Number.isFinite(message.y)) return this.fail('无效方向');
++      const length = Math.max(1, Math.hypot(message.x, message.y));
++      p.input = { x: message.x / length, y: message.y / length };
++      p.target = null;
++      return { ok: true };
++    }
++    if (message.type === 'move') {
++      if (!Number.isFinite(message.x) || !Number.isFinite(message.y)) return this.fail('无效位置');
++      p.target = { x: clamp(message.x, 70, WORLD_SIZE - 70), y: clamp(message.y, 70, WORLD_SIZE - 70) };
++      p.input = { x: 0, y: 0 };
++      return { ok: true };
++    }
++    if (this.time - p.actionAt < 0.32) return this.fail('动作太快，请稍候');
++    if (message.type === 'gather') {
++      const object = this.objects.find(o => o.id === message.id) ?? this.objects.filter(o => o.amount > 0 && distance(p, o) <= 105).sort((a, b) => distance(p, a) - distance(p, b))[0];
++      if (!object || object.amount <= 0) return this.fail('附近没有可采集的资源');
++      if (distance(p, object) > 105) return this.fail('再靠近一点才能采集');
++      const resource = { tree: 'wood', sapling: 'wood', grass: 'grass', rock: 'stone', berry: 'berry' }[object.type];
++      const count = object.type === 'tree' && p.inventory.axe > 0 ? 2 : 1;
++      p.inventory[resource] += count;
++      if (object.type === 'rock') p.inventory.flint++;
++      object.amount--;
++      if (!object.amount) object.regrow = this.time + 90;
++      p.collected += count;
++      p.actionAt = this.time;
++      p.action = { kind: 'gather', at: this.time, target: object.id };
++      object.hitAt = this.time;
++      return { ok: true, message: `获得 ${ITEMS[resource].name} ×${count}${object.type === 'rock' ? '、燧石 ×1' : ''}` };
++    }
++    if (message.type === 'craft') {
++      const recipe = Object.hasOwn(RECIPES, message.recipe) ? RECIPES[message.recipe] : null;
++      if (!recipe) return this.fail('未知配方');
++      const fire = this.fires.find(f => f.until > this.time && distance(p, f) < 170);
++      if (recipe.needsFire && !fire) return this.fail('需要靠近燃烧的营火');
++      if (Object.entries(recipe.costs).some(([key, count]) => p.inventory[key] < count)) return this.fail('材料不足，请先采集');
++      if (message.recipe === 'campfire' && this.fires.some(f => distance(p, f) < 70)) return this.fail('营火之间需要留出一点距离');
++      for (const [key, count] of Object.entries(recipe.costs)) p.inventory[key] -= count;
++      if (message.recipe === 'campfire') {
++        this.fires.push({ id: `f${++this.sequence}`, x: p.x, y: p.y + 24, until: this.time + 150 });
++        p.craftedFire = true;
++        this.event(`${p.name} 生起了一堆营火`, 'craft');
++      } else if (message.recipe === 'fuel') fire.until = Math.max(fire.until, this.time) + 60;
++      else p.inventory[message.recipe]++;
++      p.actionAt = this.time;
++      p.action = { kind: 'craft', at: this.time };
++      return { ok: true, message: `${recipe.name}已${message.recipe === 'fuel' ? '完成' : '制作'}` };
++    }
++    if (message.type === 'use') {
++      const item = message.item;
++      if (!['berry', 'cooked', 'torch'].includes(item)) return this.fail('该物品无需手动使用');
++      if (p.inventory[item] < 1) return this.fail('背包里没有该物品');
++      p.inventory[item]--;
++      if (item === 'torch') p.torchUntil = this.time + 90;
++      else {
++        p.hunger = Math.min(100, p.hunger + (item === 'berry' ? 18 : 28));
++        p.health = Math.min(100, p.health + (item === 'berry' ? 3 : 8));
++      }
++      p.actionAt = this.time;
++      p.action = { kind: 'use', at: this.time };
++      return { ok: true, message: item === 'torch' ? '火把已点燃，可持续 90 秒' : `食用了${ITEMS[item].name}` };
++    }
++    if (message.type === 'attack') {
++      const enemy = this.enemies.filter(e => e.health > 0 && distance(p, e) < 120).sort((a, b) => distance(p, a) - distance(p, b))[0];
++      if (!enemy) return this.fail('附近没有可攻击的怪物');
++      enemy.health -= p.inventory.axe ? 30 : 15;
++      enemy.hitAt = this.time;
++      p.action = { kind: 'attack', at: this.time, target: enemy.id };
++      if (enemy.health <= 0) { enemy.respawn = this.time + 150; p.inventory.berry += 2; this.event(`${p.name} 击退了暗影爬虫`, 'combat'); }
++      p.actionAt = this.time;
++      return { ok: true, message: enemy.health > 0 ? '命中暗影爬虫' : '击败爬虫，获得浆果 ×2' };
++    }
++    return this.fail('未知操作');
++  }
++  tick(dt) {
++    this.time += dt;
++    const phase = phaseAt(this.time);
++    for (const o of this.objects) if (!o.amount && this.time >= o.regrow) o.amount = 3;
++    this.fires = this.fires.filter(f => f.until + 30 > this.time);
++    for (const p of this.players.values()) {
++      if (p.dead) continue;
++      let vector = p.input;
++      if (p.target) {
++        const d = distance(p, p.target);
++        if (d < 5) p.target = null;
++        else vector = { x: (p.target.x - p.x) / d, y: (p.target.y - p.y) / d };
++      }
++      if (p.target || Math.hypot(vector.x, vector.y) > 0) {
++        const travel = p.target ? Math.min(125 * dt, distance(p, p.target)) : 125 * dt;
++        p.x = clamp(p.x + vector.x * travel, 70, WORLD_SIZE - 70);
++        p.y = clamp(p.y + vector.y * travel, 70, WORLD_SIZE - 70);
++      }
++      const lit = p.torchUntil > this.time || this.fires.some(f => f.until > this.time && distance(p, f) < 185);
++      p.hunger = Math.max(0, p.hunger - dt * 0.13);
++      p.sanity = clamp(p.sanity + dt * (phase === 'night' && !lit ? -1.1 : lit ? 0.25 : 0.03), 0, 100);
++      if (p.hunger <= 0) p.health -= dt * 1.2;
++      if (phase === 'night' && !lit) { p.health -= dt * 1.8; p.hurtAt = this.time; }
++      if (p.health <= 0) { p.health = 0; p.dead = true; p.target = null; p.input = { x: 0, y: 0 }; this.event(`${p.name} 倒在了荒野中`, 'death'); }
++    }
++    for (const enemy of this.enemies) {
++      if (enemy.health <= 0) { if (this.time > enemy.respawn) enemy.health = 60; continue; }
++      const prey = [...this.players.values()].filter(p => !p.dead).sort((a, b) => distance(a, enemy) - distance(b, enemy))[0];
++      if (!prey || distance(prey, enemy) > (phase === 'night' ? 650 : 210)) continue;
++      const repelled = this.fires.some(f => f.until > this.time && distance(enemy, f) < 190);
++      const d = Math.max(1, distance(prey, enemy));
++      const sign = repelled ? -1 : 1;
++      enemy.x = clamp(enemy.x + sign * (prey.x - enemy.x) / d * 48 * dt, 80, 2320);
++      enemy.y = clamp(enemy.y + sign * (prey.y - enemy.y) / d * 48 * dt, 80, 2320);
++      if (d < 36 && !repelled && this.time > enemy.cooldown) { prey.health = Math.max(0, prey.health - 8); prey.hurtAt = this.time; enemy.cooldown = this.time + 1.5; }
++    }
++  }
++  snapshot() {
++    return { code: this.code, time: this.time, day: Math.floor(this.time / CYCLE_SECONDS) + 1, phase: phaseAt(this.time), objects: this.objects, fires: this.fires, enemies: this.enemies, events: this.events, players: [...this.players.values()].map(({ input: _input, target: _target, actionAt: _actionAt, ...p }) => p) };
++  }
++}
+diff --git a/src/icons.js b/src/icons.js
+new file mode 100644
+--- /dev/null
++++ b/src/icons.js
+@@ -0,0 +1,40 @@
++const paths = {
++  forest: '<path d="M8 3 2 13h4l-3 5h10l-3-5h4L8 3Z"/><path d="M8 18v3M16 5l5 9h-3l3 5h-7M17 19v2"/>',
++  users: '<circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M17 5a3 3 0 0 1 0 6m1 3a5 5 0 0 1 3 5v1"/>',
++  book: '<path d="M3 4h6a4 4 0 0 1 3 2 4 4 0 0 1 3-2h6v16h-6a4 4 0 0 0-3 2 4 4 0 0 0-3-2H3V4Zm9 2v16"/>',
++  sound: '<path d="m3 9 4 0 5-4v14l-5-4H3V9Zm13-1a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/>',
++  muted: '<path d="m3 9 4 0 5-4v14l-5-4H3V9Zm13 0 5 6m0-6-5 6"/>',
++  tools: '<path d="m4 4 16 16M14 4l6 6M12 8l4-4M4 20l6-6M3 3l4 1-3 3-1-4Z"/>',
++  spark: '<path d="m12 2 2.6 7.4L22 12l-7.4 2.6L12 22l-2.6-7.4L2 12l7.4-2.6L12 2Z"/>',
++  pin: '<path d="M19 10c0 5-7 12-7 12S5 15 5 10a7 7 0 0 1 14 0Z"/><circle cx="12" cy="10" r="2"/>',
++  map: '<path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2V5Zm6-2v16m6-14v16"/>',
++  campfire: '<path d="M13 2c1 5-4 6-3 10 2-1 3-2 4-4 2 2 4 4 4 7a6 6 0 0 1-12 0c0-4 5-6 7-13ZM4 20l16 3M4 23l16-3"/>',
++  leaf: '<path d="M20 3c-8-1-16 3-16 9a7 7 0 0 0 7 7c6 0 9-8 9-16ZM3 22 16 8"/>',
++  chat: '<path d="M21 4H3v13h4v4l5-4h9V4Z"/><path d="M7 9h10M7 13h6"/>',
++  close: '<path d="m6 6 12 12M18 6 6 18"/>',
++  send: '<path d="m22 2-7 20-4-9-9-4 20-7ZM11 13 22 2"/>',
++  hand: '<path d="M8 12V5a2 2 0 0 1 4 0v7-8a2 2 0 0 1 4 0v8-6a2 2 0 0 1 4 0v10c0 5-4 7-8 7-3 0-5-2-6-4L3 13c-1-3 2-4 4-1l1 1"/>',
++  axe: '<path d="m5 22 11-15M10 3l8 2 4 6-7 1-5-9Z"/>',
++  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/>',
++  moon: '<path d="M20 15A9 9 0 0 1 9 3a9 9 0 1 0 11 12Z"/>',
++  heart: '<path d="M20 4c-3-2-6 0-8 3-2-3-5-5-8-3-5 4 0 10 8 17 8-7 13-13 8-17Z"/>',
++  hunger: '<path d="M6 3v7m3-7v7M3 3v7a3 3 0 0 0 6 0M6 13v9M18 22V3c-4 1-5 7-4 10h4"/>',
++  sanity: '<path d="M9 3a3 3 0 0 0-5 3 4 4 0 0 0-1 7 4 4 0 0 0 3 6 3 3 0 0 0 6 1V5a3 3 0 0 0-3-2Zm6 0a3 3 0 0 1 5 3 4 4 0 0 1 1 7 4 4 0 0 1-3 6 3 3 0 0 1-6 1M5 9h3m-1 7h2m7-7h3m-4 7h2"/>',
++  expand: '<path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/>',
++  bag: '<path d="M8 7V5a4 4 0 0 1 8 0v2M5 7h14l2 15H3L5 7Z"/><path d="M8 7v4m8-4v4M8 16h8"/>',
++  copy: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V3H3v13h5"/>',
++  arrow: '<path d="M3 12h18m-6-6 6 6-6 6"/>',
++  wood: '<path d="m4 5 14 3 3 10-15 2-3-10 1-5Z"/><path d="m4 5 5 5-3 10m3-10 12 8m-4-10 2 6M6 7l1 4"/>',
++  grass: '<path d="M12 22 8 3l5 6 3-7-1 13 7-7-7 14H9L2 12l8 5-4-9"/>',
++  stone: '<path d="m3 15 5-10 10-2 4 12-6 6H7l-4-6Zm5-10 3 9 7-11M3 15l8-1 5 7m-5-7 11 1"/>',
++  flint: '<path d="m14 2 7 11-5 9-13-8L14 2Zm0 0-4 13 11-2M3 14l7 1 6 7"/>',
++  berry: '<circle cx="7" cy="14" r="5"/><circle cx="17" cy="15" r="5"/><circle cx="12" cy="8" r="4"/><path d="M12 4V1l5 1M5 13h1m10 1h1"/>',
++  cooked: '<path d="M3 17h18M5 17l2 5h10l2-5M8 12c-4-4 3-5 0-9m5 9c-4-4 3-5 0-9m5 9c-4-4 3-5 0-9"/>',
++  torch: '<path d="m10 13 1 9h2l1-9m-6-1h8M13 2c1 3-2 4-1 6l3-3c5 6-5 11-7 5-1-3 1-6 5-8Z"/>',
++};
++export function icon(name, className = '') {
++  return `<svg class="icon ${className}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] || paths.spark}</svg>`;
++}
++export function hydrateIcons(root = document) {
++  root.querySelectorAll('[data-icon]').forEach(el => { el.innerHTML = icon(el.dataset.icon); });
++}
+diff --git a/src/main.js b/src/main.js
+new file mode 100644
+--- /dev/null
++++ b/src/main.js
+@@ -0,0 +1,379 @@
++import './style.css';
++import { icon, hydrateIcons } from './icons.js';
++import { Renderer, drawClock, drawMap } from './renderer.js';
++import { ITEMS, RECIPES } from '../server/world.js';
++
++const $ = id => document.getElementById(id);
++const assetUrl = key => new URL(`./art/item-${key}.png`, document.baseURI).href;
++hydrateIcons();
++const renderer = new Renderer($('world'));
++const itemKeys = Object.keys(ITEMS);
++const objectNames = { tree: '常青树', grass: '干草丛', rock: '岩石', berry: '浆果灌木', sapling: '小树枝' };
++const recipeDetails = {
++  axe: { category: 'tools', description: '更快采木，更有力地反击' },
++  torch: { category: 'survival', description: '带一束光，走进黑夜' },
++  campfire: { category: 'survival', description: '黑夜中，你们共同的庇护所' },
++  cooked: { category: 'survival', description: '在营火旁，把食物烤熟' },
++  fuel: { category: 'survival', description: '让营火再燃烧 60 秒' },
++};
++let socket;
++let state = null;
++let playerId = null;
++let category = 'all';
++let pendingGather = null;
++let lastAutoGather = 0;
++let toastTimer;
++let reconnectTimer;
++let retryDelay = 1000;
++let connectedOnce = false;
++let dialogPreviouslyFocused;
++let audio = null;
++let audioEnabled = false;
++let lastAudioPhase;
++let inputDirection = { x: 0, y: 0 };
++let inventorySignature = '';
++let recipesSignature = '';
++let playersSignature = '';
++let eventsSignature = '';
++const keys = new Set();
++const stored = (() => { try { return JSON.parse(localStorage.getItem('wildwood-profile') || '{}'); } catch { return {}; } })();
++const profile = { name: stored.name || '林间旅人', code: new URLSearchParams(location.search).get('room') || stored.code || 'WILD01' };
++$('name-input').value = profile.name;
++$('code-input').value = profile.code;
++
++function saveProfile() {
++  try { localStorage.setItem('wildwood-profile', JSON.stringify(profile)); } catch { /* Browsing without storage still permits play. */ }
++  const url = new URL(location.href);
++  url.searchParams.set('room', profile.code);
++  history.replaceState(null, '', url);
++}
++function toast(message, error = false) {
++  $('toast').textContent = message;
++  $('toast').classList.remove('hidden');
++  $('toast').classList.toggle('error', error);
++  clearTimeout(toastTimer);
++  toastTimer = setTimeout(() => $('toast').classList.add('hidden'), 3000);
++}
++function send(message) {
++  if (socket?.readyState !== WebSocket.OPEN || !playerId && message.type !== 'join') {
++    toast('连接尚未就绪，正在重新连接…', true);
++    return false;
++  }
++  socket.send(JSON.stringify(message));
++  return true;
++}
++function self() { return state?.players.find(p => p.id === playerId); }
++function connection(text, offline = false) {
++  $('connection').textContent = text;
++  $('connection').classList.toggle('offline', offline);
++}
++function connect() {
++  clearTimeout(reconnectTimer);
++  connection(connectedOnce ? '正在重连…' : '正在连接…', true);
++  const endpoint = new URL(import.meta.env.VITE_GAME_SERVER_URL || './ws', document.baseURI);
++  endpoint.protocol = endpoint.protocol === 'https:' || endpoint.protocol === 'wss:' ? 'wss:' : 'ws:';
++  socket = new WebSocket(endpoint.href);
++  socket.addEventListener('open', () => {
++    retryDelay = 1000;
++    send({ type: 'join', ...profile });
++  });
++  socket.addEventListener('message', event => {
++    const message = JSON.parse(event.data);
++    if (message.type === 'joined') {
++      playerId = message.id;
++      profile.code = message.code;
++      profile.name = message.name;
++      $('code-input').value = message.code;
++      $('name-input').value = message.name;
++      saveProfile();
++      connection('已连接');
++      if (connectedOnce) toast(`已进入世界 ${message.code}`);
++      connectedOnce = true;
++      inventorySignature = recipesSignature = playersSignature = eventsSignature = '';
++      pendingGather = null;
++      closeDialog($('room-dialog'));
++    }
++    if (message.type === 'state') {
++      state = message.state;
++      updateUI();
++      if (pendingGather && self()) {
++        const target = state.objects.find(o => o.id === pendingGather);
++        if (!target || !target.amount) pendingGather = null;
++        else if (Math.hypot(target.x - self().x, target.y - self().y) < 91 && Date.now() - lastAutoGather > 450) {
++          send({ type: 'input', x: 0, y: 0 });
++          send({ type: 'gather', id: target.id });
++          lastAutoGather = Date.now();
++          pendingGather = null;
++        }
++      }
++    }
++    if (message.type === 'error' || message.type === 'result') {
++      if (message.message) toast(message.message, message.type === 'error' || !message.ok);
++      if (message.ok) playChime();
++      if (message.type === 'error' && !playerId) openDialog($('room-dialog'));
++    }
++  });
++  socket.addEventListener('close', () => {
++    playerId = null;
++    keys.clear();
++    inputDirection = { x: 0, y: 0 };
++    connection('连接中断', true);
++    $('world-alert').classList.remove('hidden');
++    $('world-alert').textContent = '连接已中断，正在重连。重连后将以新旅人身份出发。';
++    if (navigator.onLine) reconnectTimer = setTimeout(connect, retryDelay);
++    retryDelay = Math.min(10000, retryDelay * 2);
++  });
++  socket.addEventListener('error', () => connection('无法连接', true));
++}
++function nearest() {
++  const p = self();
++  if (!p || p.dead) return null;
++  return state.objects.filter(o => o.amount > 0 && Math.hypot(o.x - p.x, o.y - p.y) <= 105).sort((a, b) => Math.hypot(a.x - p.x, a.y - p.y) - Math.hypot(b.x - p.x, b.y - p.y))[0];
++}
++function updateUI() {
++  const p = self();
++  if (!p) return;
++  const timeInDay = state.time % 180;
++  const seconds = Math.ceil((state.phase === 'day' ? 105 : state.phase === 'dusk' ? 145 : 180) - timeInDay);
++  $('header-day').textContent = `第 ${state.day} 天`;
++  $('clock-day').textContent = state.day;
++  $('phase-name').textContent = { day: '白昼', dusk: '黄昏', night: '黑夜' }[state.phase];
++  $('phase-countdown').textContent = `${seconds}s 后${state.phase === 'day' ? '黄昏' : state.phase === 'dusk' ? '入夜' : '天亮'}`;
++  $('phase-icon').innerHTML = icon(state.phase === 'night' ? 'moon' : 'sun');
++  $('player-name').textContent = p.name;
++  $('room-count').textContent = `联机世界 · ${state.players.length}/8`;
++  $('online-count').textContent = `${state.players.length} 在线`;
++  $('coordinates').textContent = `${Math.round(p.x)}, ${Math.round(p.y)}`;
++  $('location-label').textContent = Math.hypot(p.x - 1200, p.y - 1200) < 350 ? '林间空地' : p.y < 950 ? '暗影密林' : p.x > 1600 ? '东部荒原' : '苔草森林';
++  $('mobile-stats').textContent = `生命 ${Math.ceil(p.health)} · 饥饿 ${Math.ceil(p.hunger)}`;
++  for (const key of ['health', 'hunger', 'sanity']) {
++    $(`stat-${key}-value`).textContent = Math.ceil(p[key]);
++    $(`stat-${key}-bar`).style.transform = `scaleX(${p[key] / 100})`;
++    $(`stat-${key}`).setAttribute('aria-label', `${{ health: '生命', hunger: '饥饿', sanity: '理智' }[key]} ${Math.ceil(p[key])} / 100`);
++  }
++  const inv = JSON.stringify(p.inventory);
++  if (inv !== inventorySignature) {
++    inventorySignature = inv;
++    itemKeys.forEach((key, i) => {
++      const el = $(`item-${key}`), count = p.inventory[key];
++      el.classList.toggle('filled', count > 0);
++      el.disabled = count < 1;
++      el.querySelector('.slot-count').textContent = count || '';
++      el.setAttribute('aria-label', `${ITEMS[key].name}，${count} 个。${ITEMS[key].description}`);
++      el.title = `${i + 1} · ${ITEMS[key].name}\n${ITEMS[key].description}`;
++    });
++    $('inventory-summary').textContent = `${Object.values(p.inventory).reduce((a, b) => a + b, 0)} 件物品 · 8 种材料与工具`;
++  }
++  const nearbyFire = state.fires.some(f => f.until > state.time && Math.hypot(f.x - p.x, f.y - p.y) < 170);
++  const sig = `${inv}/${nearbyFire}/${category}`;
++  if (sig !== recipesSignature) { recipesSignature = sig; renderRecipes(p, nearbyFire); }
++  const ps = JSON.stringify(state.players.map(({ id, name, dead, color }) => ({ id, name, dead, color })));
++  if (ps !== playersSignature) {
++    playersSignature = ps;
++    $('players').replaceChildren();
++    state.players.forEach(player => {
++      const row = document.createElement('div'); row.className = 'player-row';
++      const avatar = document.createElement('span'); avatar.className = 'player-avatar'; avatar.textContent = player.name[0];
++      const name = document.createElement('span'); name.textContent = player.name;
++      const label = document.createElement('span'); label.className = 'self-label'; label.textContent = player.dead ? '已倒下' : player.id === playerId ? '你' : '同行中';
++      row.append(avatar, name, label); $('players').append(row);
++    });
++  }
++  const es = state.events.at(-1)?.id;
++  if (es !== eventsSignature) {
++    eventsSignature = es;
++    const shouldScroll = $('messages').scrollHeight - $('messages').scrollTop - $('messages').clientHeight < 35;
++    $('messages').replaceChildren();
++    state.events.forEach(event => { const el = document.createElement('p'); el.textContent = event.text; el.className = event.kind; $('messages').append(el); });
++    if (shouldScroll) $('messages').scrollTop = $('messages').scrollHeight;
++  }
++  const gathered = p.craftedFire ? 6 : Math.min(3, p.inventory.wood) + Math.min(3, p.inventory.grass);
++  $('objective-count').textContent = p.craftedFire ? '完成' : `${gathered}/6`;
++  $('objective-progress').style.transform = `scaleX(${gathered / 6})`;
++  $('objective-text').textContent = p.craftedFire ? '火光已亮起，记得添柴与分享食物' : '采集木材与干草，制作第一堆营火';
++  const n = nearest();
++  $('interaction').classList.toggle('hidden', !n);
++  if (n) $('interaction-name').textContent = objectNames[n.type];
++  $('death-panel').classList.toggle('hidden', !p.dead);
++  const lit = p.torchUntil > state.time || nearbyFire;
++  $('torch-state').textContent = p.torchUntil > state.time ? `火把还剩 ${Math.ceil(p.torchUntil - state.time)} 秒` : '点击食物食用';
++  if (state.phase === 'night' && !lit && !p.dead) {
++    $('world-alert').textContent = '黑暗正在吞噬生命。立即点燃火把或靠近营火！';
++    $('world-alert').classList.remove('hidden');
++  } else if (playerId) $('world-alert').classList.add('hidden');
++  drawClock($('clock'), state.time);
++  drawMap($('minimap'), state, playerId);
++  if ($('map-dialog').open) drawMap($('fullmap'), state, playerId, true);
++  if (audioEnabled && lastAudioPhase !== state.phase) { lastAudioPhase = state.phase; playChime(); }
++}
++function renderRecipes(p, fire) {
++  $('recipes').replaceChildren();
++  for (const [key, recipe] of Object.entries(RECIPES)) {
++    if (category !== 'all' && recipeDetails[key].category !== category) continue;
++    const enough = Object.entries(recipe.costs).every(([item, count]) => p.inventory[item] >= count);
++    const available = enough && (!recipe.needsFire || fire);
++    const button = document.createElement('button');
++    button.className = `recipe${available ? ' active' : ''}`;
++    button.dataset.recipe = key;
++    button.setAttribute('aria-label', `制作${recipe.name}，${Object.entries(recipe.costs).map(([item, count]) => `${count} ${ITEMS[item].name}`).join('，')}${recipe.needsFire ? '，需要营火' : ''}`);
++    button.title = available ? `点击制作${recipe.name}` : recipe.needsFire && !fire ? '需要靠近燃烧的营火' : '材料不足，点击查看提示';
++    button.innerHTML = `<span class="recipe-icon">${key === 'campfire' ? icon('campfire') : `<img src="${assetUrl(key === 'fuel' ? 'wood' : key)}" alt="" />`}</span><span class="recipe-copy"><span class="recipe-title">${recipe.name}${icon('arrow')}</span><span class="recipe-cost">${Object.entries(recipe.costs).map(([item, count]) => `<span class="${p.inventory[item] >= count ? 'enough' : 'short'}">${ITEMS[item].name} ${p.inventory[item]}/${count}</span>`).join('')}</span><span class="recipe-desc">${recipeDetails[key].description}</span></span>`;
++    button.addEventListener('click', () => send({ type: 'craft', recipe: key }));
++    $('recipes').append(button);
++  }
++}
++$('stats').innerHTML = [['health', 'heart', '生命'], ['hunger', 'hunger', '饥饿'], ['sanity', 'sanity', '理智']].map(([key, symbol, name]) => `<div class="stat ${key}" id="stat-${key}" role="img" aria-label="${name} 100 / 100"><span class="stat-icon">${icon(symbol)}</span><div class="stat-info"><div class="stat-label"><span>${name}</span><span><strong id="stat-${key}-value">100</strong><small> / 100</small></span></div><div class="stat-track"><span id="stat-${key}-bar" style="width:100%"></span></div></div></div>`).join('');
++itemKeys.forEach((key, index) => {
++  const button = document.createElement('button');
++  button.className = 'slot'; button.id = `item-${key}`; button.disabled = true;
++  button.innerHTML = `<span class="slot-index">${index + 1}</span><img src="${assetUrl(key)}" alt="" /><span class="slot-count"></span><span class="slot-name">${ITEMS[key].name}</span>`;
++  button.addEventListener('click', () => useItem(key));
++  $('inventory').append(button);
++});
++function useItem(key) {
++  if (['berry', 'cooked', 'torch'].includes(key)) send({ type: 'use', item: key });
++  else toast(`${ITEMS[key].name}：${ITEMS[key].description}`);
++}
++function openDialog(dialog) {
++  if (dialog.open) return;
++  keys.clear(); updateInput();
++  dialogPreviouslyFocused = document.activeElement;
++  dialog.showModal();
++}
++function closeDialog(dialog) {
++  if (!dialog.open) return;
++  dialog.close();
++  dialogPreviouslyFocused?.focus();
++}
++document.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', () => closeDialog($(el.dataset.close))));
++document.querySelectorAll('dialog').forEach(dialog => {
++  dialog.addEventListener('click', event => { if (event.target !== dialog) return; const r = dialog.getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) closeDialog(dialog); });
++  dialog.addEventListener('close', () => dialogPreviouslyFocused?.focus());
++});
++$('room-button').addEventListener('click', () => openDialog($('room-dialog')));
++for (const id of ['help-button', 'guide-link']) $(id).addEventListener('click', () => openDialog($('help-dialog')));
++for (const id of ['map-button', 'expand-map', 'minimap-button']) $(id).addEventListener('click', () => { openDialog($('map-dialog')); drawMap($('fullmap'), state, playerId, true); });
++function joinWorld(create = false) {
++  if (!$('name-input').reportValidity() || !create && !$('code-input').reportValidity()) return;
++  profile.name = $('name-input').value.trim() || '旅人';
++  profile.code = $('code-input').value.trim().toUpperCase() || 'WILD01';
++  keys.clear();
++  updateInput();
++  if (send({ type: 'join', ...profile, create })) pendingGather = null;
++}
++$('join-form').addEventListener('submit', event => { event.preventDefault(); joinWorld(); });
++$('create-world').addEventListener('click', () => joinWorld(true));
++async function copyInvite() {
++  const url = new URL(location.href); url.searchParams.set('room', profile.code);
++  try { await navigator.clipboard.writeText(url.href); toast(`世界 ${profile.code} 的邀请链接已复制`); }
++  catch { openDialog($('room-dialog')); $('code-input').select(); toast(`世界代码：${profile.code}。复制地址栏链接即可邀请朋友。`); }
++}
++for (const id of ['copy-code', 'invite-button']) $(id).addEventListener('click', copyInvite);
++$('chat-button').addEventListener('click', toggleChat);
++$('close-chat').addEventListener('click', () => $('chat-panel').classList.add('hidden'));
++function toggleChat() {
++  $('chat-panel').classList.toggle('hidden');
++  if (!$('chat-panel').classList.contains('hidden')) { keys.clear(); updateInput(); $('chat-input').focus(); $('messages').scrollTop = $('messages').scrollHeight; }
++  else $('world').focus();
++}
++$('chat-form').addEventListener('submit', event => {
++  event.preventDefault();
++  const text = $('chat-input').value.trim();
++  if (text && send({ type: 'chat', text })) $('chat-input').value = '';
++});
++function updateInput() {
++  const x = (keys.has('d') || keys.has('arrowright') ? 1 : 0) - (keys.has('a') || keys.has('arrowleft') ? 1 : 0);
++  const y = (keys.has('s') || keys.has('arrowdown') ? 1 : 0) - (keys.has('w') || keys.has('arrowup') ? 1 : 0);
++  // Keyboard directions map to the screen axes of the isometric world.
++  const vector = { x: (x + y) / Math.SQRT2, y: (y - x) / Math.SQRT2 };
++  if (vector.x !== inputDirection.x || vector.y !== inputDirection.y) {
++    inputDirection = vector;
++    pendingGather = null;
++    if (playerId) send({ type: 'input', ...vector });
++  }
++}
++const movementKeys = ['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright'];
++window.addEventListener('keydown', event => {
++  if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName) || document.querySelector('dialog[open]') || event.ctrlKey || event.metaKey || event.altKey) return;
++  const key = event.key.toLowerCase();
++  if (movementKeys.includes(key)) { event.preventDefault(); keys.add(key); updateInput(); }
++  if (event.repeat) return;
++  if (key === 'e') { event.preventDefault(); gather(); }
++  if (key === 'f') { event.preventDefault(); send({ type: 'attack' }); }
++  if (key === 'enter') { event.preventDefault(); toggleChat(); }
++  if (key === 'm') { event.preventDefault(); openDialog($('map-dialog')); drawMap($('fullmap'), state, playerId, true); }
++  if (/^[1-8]$/.test(key)) useItem(itemKeys[Number(key) - 1]);
++  if (key === 'escape') { $('chat-panel').classList.add('hidden'); document.querySelector('.craft-panel').classList.remove('mobile-open'); document.querySelector('.inventory-bar').classList.remove('mobile-open'); }
++});
++window.addEventListener('keyup', event => { keys.delete(event.key.toLowerCase()); updateInput(); });
++window.addEventListener('blur', () => { keys.clear(); updateInput(); });
++document.addEventListener('visibilitychange', () => { if (document.hidden) { keys.clear(); updateInput(); } });
++function gather() { const n = nearest(); send({ type: 'gather', ...(n ? { id: n.id } : {}) }); }
++$('gather-button').addEventListener('click', gather);
++$('touch-gather').addEventListener('click', gather);
++$('touch-attack').addEventListener('click', () => send({ type: 'attack' }));
++$('revive-button').addEventListener('click', () => send({ type: 'revive' }));
++$('world').addEventListener('pointermove', event => {
++  const rect = $('world').getBoundingClientRect();
++  renderer.hover = renderer.hitTest(state, event.clientX - rect.left, event.clientY - rect.top)?.id || null;
++  $('world').dataset.hover = renderer.hover || '';
++  $('world').style.cursor = renderer.hover ? 'pointer' : 'crosshair';
++});
++$('world').addEventListener('pointerleave', () => { renderer.hover = null; $('world').dataset.hover = ''; });
++$('world').addEventListener('pointerdown', event => {
++  if (event.button !== 0 || !self() || self().dead) return;
++  document.querySelector('.craft-panel').classList.remove('mobile-open');
++  document.querySelector('.inventory-bar').classList.remove('mobile-open');
++  $('world').focus();
++  const rect = $('world').getBoundingClientRect(), x = event.clientX - rect.left, y = event.clientY - rect.top;
++  const target = renderer.hitTest(state, x, y);
++  if (target) {
++    if (Math.hypot(self().x - target.x, self().y - target.y) <= 105) send({ type: 'gather', id: target.id });
++    else { pendingGather = target.id; send({ type: 'move', x: target.x, y: target.y }); }
++  } else { pendingGather = null; send({ type: 'move', ...renderer.unproject(x, y) }); }
++});
++const touchDirections = { up: 'w', left: 'a', down: 's', right: 'd' };
++document.querySelectorAll('[data-direction]').forEach(button => {
++  button.addEventListener('pointerdown', event => { event.preventDefault(); button.setPointerCapture(event.pointerId); keys.add(touchDirections[button.dataset.direction]); updateInput(); });
++  for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) button.addEventListener(type, () => { keys.delete(touchDirections[button.dataset.direction]); updateInput(); });
++});
++document.querySelectorAll('[data-category]').forEach(button => button.addEventListener('click', () => {
++  category = button.dataset.category;
++  document.querySelectorAll('[data-category]').forEach(b => b.classList.toggle('active', b === button));
++  if (self()) updateUI();
++}));
++$('mobile-craft').addEventListener('click', () => { document.querySelector('.craft-panel').classList.toggle('mobile-open'); document.querySelector('.inventory-bar').classList.remove('mobile-open'); });
++$('mobile-bag').addEventListener('click', () => { document.querySelector('.inventory-bar').classList.toggle('mobile-open'); document.querySelector('.craft-panel').classList.remove('mobile-open'); });
++function playChime() {
++  if (!audioEnabled || !audio) return;
++  const oscillator = audio.createOscillator(), gain = audio.createGain();
++  oscillator.type = 'sine'; oscillator.frequency.setValueAtTime(310, audio.currentTime); oscillator.frequency.exponentialRampToValueAtTime(460, audio.currentTime + 0.12);
++  gain.gain.setValueAtTime(0.025, audio.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + 0.35);
++  oscillator.connect(gain); gain.connect(audio.destination); oscillator.start(); oscillator.stop(audio.currentTime + 0.36);
++}
++$('sound-button').addEventListener('click', async () => {
++  try {
++    audio ??= new window.AudioContext();
++    await audio.resume();
++    audioEnabled = !audioEnabled;
++    $('sound-button').innerHTML = icon(audioEnabled ? 'sound' : 'muted');
++    $('sound-button').setAttribute('aria-label', audioEnabled ? '关闭环境音效' : '开启环境音效');
++    $('sound-button').title = audioEnabled ? '关闭环境音效' : '开启环境音效';
++    toast(audioEnabled ? '已开启轻量环境提示音' : '音效已关闭'); playChime();
++  } catch { toast('浏览器不支持音效，仍可正常游玩', true); }
++});
++function frame(time) {
++  renderer.render(state, playerId, time / 1000);
++  requestAnimationFrame(frame);
++}
++requestAnimationFrame(frame);
++window.addEventListener('offline', () => {
++  clearTimeout(reconnectTimer);
++  connection('网络已离线', true);
++  socket?.close();
++});
++window.addEventListener('online', () => {
++  if (!socket || socket.readyState === WebSocket.CLOSED) connect();
++  else if (socket.readyState === WebSocket.CLOSING) reconnectTimer = setTimeout(connect, 1000);
++});
++connect();
+diff --git a/src/renderer.js b/src/renderer.js
+new file mode 100644
+--- /dev/null
++++ b/src/renderer.js
+@@ -0,0 +1,323 @@
++const noise = (x, y) => { const n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return n - Math.floor(n); };
++const mix = (a, b, t) => a + (b - a) * t;
++const ASSETS = ['tree', 'tree-sparse', 'berry', 'grass', 'rock', 'sapling', 'survivor', 'spider', 'terrain', 'item-axe', 'item-torch'];
++const HEIGHTS = { tree: 225, grass: 65, rock: 78, berry: 92, sapling: 100 };
++export class Renderer {
++  constructor(canvas) {
++    this.canvas = canvas;
++    this.ctx = canvas.getContext('2d');
++    this.camera = { x: 1200, y: 1200 };
++    this.width = this.height = 0;
++    this.scale = 1;
++    this.hover = null;
++    this.frame = 0;
++    this.lastFrame = 0;
++    this.actors = new Map();
++    this.darkness = document.createElement('canvas');
++    this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
++    this.assets = {};
++    this.alpha = {};
++    this.ready = Promise.all(ASSETS.map(name => new Promise((resolve, reject) => {
++      const img = new window.Image();
++      img.onload = () => {
++        this.assets[name] = img;
++        if (Object.hasOwn(HEIGHTS, name) || name === 'tree-sparse') {
++          const mask = document.createElement('canvas'); mask.width = img.width; mask.height = img.height;
++          const context = mask.getContext('2d', { willReadFrequently: true });
++          context.drawImage(img, 0, 0);
++          this.alpha[name] = context.getImageData(0, 0, img.width, img.height).data;
++        }
++        resolve();
++      };
++      img.onerror = () => reject(new Error(`游戏素材加载失败：${name}`));
++      img.src = new URL(`./art/${name}.png`, document.baseURI).href;
++    }))).then(() => {
++      this.makeTerrain();
++      this.canvas.dataset.assets = 'ready';
++    }).catch(error => { this.canvas.dataset.assets = 'error'; this.assetError = error.message; });
++    new ResizeObserver(() => this.resize()).observe(canvas);
++    this.resize();
++  }
++  resize() {
++    const box = this.canvas.getBoundingClientRect();
++    this.width = box.width; this.height = box.height;
++    const dpr = Math.min(2, window.devicePixelRatio || 1);
++    this.canvas.width = Math.round(this.width * dpr);
++    this.canvas.height = Math.round(this.height * dpr);
++    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
++    this.scale = this.width < 600 ? 0.72 : 0.93;
++  }
++  project(x, y, z = 0) {
++    return { x: this.width / 2 + (x - y - this.camera.x + this.camera.y) * 0.82 * this.scale, y: this.height * 0.51 + (x + y - this.camera.x - this.camera.y) * 0.43 * this.scale - z * this.scale };
++  }
++  unproject(x, y) {
++    const dx = (x - this.width / 2) / (0.82 * this.scale), dy = (y - this.height * 0.51) / (0.43 * this.scale);
++    return { x: this.camera.x + (dx + dy) / 2, y: this.camera.y + (dy - dx) / 2 };
++  }
++  ellipse(x, y, rx, ry, color) {
++    const c = this.ctx; c.fillStyle = color; c.beginPath(); c.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); c.fill();
++  }
++  makeTerrain() {
++    // Cache painted earth once; no checkerboard tiles or per-frame texture allocation.
++    const land = document.createElement('canvas'); land.width = land.height = 2600;
++    const c = land.getContext('2d');
++    c.fillStyle = '#777348'; c.fillRect(0, 0, 2600, 2600);
++    const texture = this.assets.terrain;
++    // Mirroring adjacent texture sheets removes hard seams without blurring ink marks.
++    for (let x = 0; x < 4; x++) for (let y = 0; y < 4; y++) {
++      c.save(); c.translate(x * 650 + (x % 2 ? 650 : 0), y * 650 + (y % 2 ? 650 : 0)); c.scale(x % 2 ? -1 : 1, y % 2 ? -1 : 1);
++      c.drawImage(texture, 0, 0, 650, 650); c.restore();
++    }
++    c.globalCompositeOperation = 'multiply';
++    for (let i = 0; i < 26; i++) {
++      const x = noise(i, 3) * 2600, y = noise(i, 4) * 2600, r = 140 + noise(i, 7) * 260;
++      c.beginPath();
++      for (let j = 0; j < 36; j++) {
++        const a = j / 36 * Math.PI * 2, radius = r * (0.85 + noise(i, j) * 0.3);
++        const px = x + Math.cos(a) * radius, py = y + Math.sin(a) * radius * 0.8;
++        j ? c.lineTo(px, py) : c.moveTo(px, py);
++      }
++      c.closePath(); c.fillStyle = i % 3 ? '#676e4923' : '#94704439'; c.fill();
++    }
++    c.globalCompositeOperation = 'source-over';
++    c.strokeStyle = '#bfa67b30'; c.lineWidth = 75; c.lineCap = 'round';
++    c.beginPath(); c.moveTo(0, 1280); c.bezierCurveTo(500, 1000, 900, 1540, 1300, 1280); c.bezierCurveTo(1650, 1060, 2000, 1620, 2600, 1320); c.stroke();
++    for (let i = 0; i < 7000; i++) {
++      const x = noise(i, 12) * 2600, y = noise(i, 17) * 2600;
++      c.strokeStyle = i % 2 ? '#34332220' : '#ded0a321'; c.lineWidth = 0.6;
++      c.beginPath(); c.moveTo(x, y); c.lineTo(x + 3 + noise(i, 21) * 9, y - 2); c.stroke();
++    }
++    this.terrain = land;
++  }
++  actor(player, dt) {
++    let actor = this.actors.get(player.id);
++    if (!actor) { actor = { x: player.x, y: player.y, lastX: player.x, lastY: player.y, movingUntil: 0, facing: 1, gait: 0 }; this.actors.set(player.id, actor); }
++    if (Math.hypot(player.x - actor.lastX, player.y - actor.lastY) > 0.1) {
++      actor.movingUntil = this.frame + 0.18;
++      const dx = player.x - actor.lastX - (player.y - actor.lastY);
++      if (Math.abs(dx) > 0.2) actor.facing = dx > 0 ? 1 : -1;
++      actor.lastX = player.x; actor.lastY = player.y;
++    }
++    actor.x = mix(actor.x, player.x, 1 - Math.exp(-dt * 25)); actor.y = mix(actor.y, player.y, 1 - Math.exp(-dt * 25));
++    if (this.frame < actor.movingUntil) actor.gait += dt * 11;
++    return actor;
++  }
++  render(state, id, time) {
++    this.frame = time;
++    const dt = Math.min(0.05, Math.max(0.001, time - this.lastFrame)); this.lastFrame = time;
++    const c = this.ctx, self = state?.players.find(p => p.id === id);
++    if (self) { this.camera.x = mix(this.camera.x, self.x, 1 - Math.exp(-dt * 11)); this.camera.y = mix(this.camera.y, self.y, 1 - Math.exp(-dt * 11)); }
++    c.clearRect(0, 0, this.width, this.height);
++    c.fillStyle = '#77704d'; c.fillRect(0, 0, this.width, this.height);
++    if (!this.terrain) {
++      c.fillStyle = '#e7d8af'; c.font = '20px "Wildwood Serif", serif'; c.textAlign = 'center';
++      c.fillText(this.assetError || '荒野正在苏醒…', this.width / 2, this.height / 2);
++      return;
++    }
++    this.drawTerrain();
++    if (!state) return;
++    const entities = [...state.objects.map(o => ({ ...o, kind: 'resource' })), ...state.fires.map(o => ({ ...o, kind: 'fire' })), ...state.enemies.filter(o => o.health > 0).map(o => ({ ...o, kind: 'enemy' })), ...state.players.map(o => ({ ...o, kind: 'player' }))].sort((a, b) => a.x + a.y - b.x - b.y);
++    const selfPos = self ? this.project(self.x, self.y) : null;
++    for (const e of entities) {
++      const actor = e.kind === 'player' ? this.actor(e, dt) : null;
++      const p = this.project(actor?.x ?? e.x, actor?.y ?? e.y);
++      if (p.x < -180 || p.x > this.width + 180 || p.y < -120 || p.y > this.height + 270) continue;
++      c.save(); c.translate(p.x, p.y); c.scale(this.scale, this.scale);
++      if (e.kind === 'resource') {
++        // Foreground trees fade only when they would occlude the playable character.
++        if (e.type === 'tree' && selfPos && Math.abs(p.x - selfPos.x) < 65 && p.y > selfPos.y && p.y - selfPos.y < 200) c.globalAlpha = 0.42;
++        this.drawResource(e, e.id === this.hover, state.time);
++      }
++      if (e.kind === 'player') this.drawPlayer(e, actor, state.time);
++      if (e.kind === 'fire') this.drawFire(e, state.time);
++      if (e.kind === 'enemy') this.drawEnemy(e, state.time);
++      c.restore();
++    }
++    if (state.phase !== 'day') this.drawDarkness(state);
++    // Light vignette belongs to world illumination, not a boxed webpage.
++    const shade = c.createRadialGradient(this.width * 0.5, this.height * 0.48, this.height * 0.2, this.width * 0.5, this.height * 0.48, Math.max(this.width, this.height) * 0.65);
++    shade.addColorStop(0, '#15160f00'); shade.addColorStop(1, '#12140da8'); c.fillStyle = shade; c.fillRect(0, 0, this.width, this.height);
++    for (const p of state.players) {
++      const a = this.actors.get(p.id), pos = this.project(a?.x ?? p.x, a?.y ?? p.y);
++      this.drawName(pos.x, pos.y - 139 * this.scale, p.name, p.id === id);
++      if (p.action && state.time - p.action.at < 0.65) this.drawAction(pos, p.action, state.time);
++    }
++    if (self) this.canvas.dataset.animation = self.dead ? 'dead' : self.action && state.time - self.action.at < 0.6 ? self.action.kind : (this.actors.get(id)?.movingUntil > time ? 'walk' : 'idle');
++    if (!this.reducedMotion.matches) for (let i = 0; i < 9; i++) {
++      const x = (noise(i, 29) * this.width + time * (4 + noise(i, 8) * 8)) % this.width, y = noise(i, 16) * this.height + Math.sin(time * 0.4 + i) * 12;
++      this.ellipse(x, y, 1, 1, state.phase === 'night' ? '#dac88277' : '#e0d0a039');
++    }
++  }
++  drawTerrain() {
++    const c = this.ctx, p = this.project(-100, -100);
++    c.save(); c.transform(0.82 * this.scale, 0.43 * this.scale, -0.82 * this.scale, 0.43 * this.scale, p.x, p.y);
++    c.drawImage(this.terrain, 0, 0); c.restore();
++  }
++  sprite(name, height, x = 0, y = 0, flip = false) {
++    const img = this.assets[name]; if (!img) return;
++    const width = img.width / img.height * height, c = this.ctx;
++    c.save(); c.translate(x, y); if (flip) c.scale(-1, 1); c.drawImage(img, -width / 2, -height, width, height); c.restore();
++  }
++  drawResource(o, hovered, time) {
++    const c = this.ctx, h = HEIGHTS[o.type] * (o.type === 'tree' ? 0.92 + o.variant * 0.12 : 0.95 + o.variant * 0.06);
++    this.ellipse(6, 1, o.type === 'tree' ? 44 : 26, o.type === 'tree' ? 15 : 9, '#20201640');
++    if (hovered && o.amount) { c.strokeStyle = '#d2c49188'; c.lineWidth = 1.2; c.beginPath(); c.ellipse(0, 0, 30, 13, 0, 0, 6.28); c.stroke(); }
++    const hitAge = o.hitAt === undefined ? 2 : time - o.hitAt;
++    if (hitAge < 0.45 && !this.reducedMotion.matches) c.rotate(Math.sin(hitAge * 35) * (0.45 - hitAge) * 0.05);
++    if (!o.amount) {
++      if (o.type === 'tree') { const img = this.assets.tree; c.drawImage(img, 120, img.height - 78, 130, 78, -18, -25, 39, 25); }
++      else { c.globalAlpha *= 0.5; this.sprite(o.type === 'rock' ? 'rock' : 'grass', 18); }
++      return;
++    }
++    if (o.type === 'tree' || o.type === 'grass' || o.type === 'sapling') {
++      if (!this.reducedMotion.matches) c.transform(1, 0, Math.sin(this.frame * 1.1 + o.x) * 0.009, 1, 0, 0);
++    }
++    this.sprite(o.type === 'tree' && o.variant === 1 ? 'tree-sparse' : o.type, h, 0, 0, o.variant === 2);
++  }
++  drawPlayer(p, actor, time) {
++    const c = this.ctx, img = this.assets.survivor;
++    this.ellipse(2, 0, 21, 8, '#17181160');
++    if (p.dead) { c.rotate(-Math.PI / 2); this.sprite('survivor', 90, 34, 0); return; }
++    const moving = this.frame < actor.movingUntil;
++    const actionAge = p.action ? time - p.action.at : 2;
++    const acting = actionAge < 0.5;
++    const hit = p.hurtAt >= 0 && time - p.hurtAt < 0.35;
++    const stride = moving ? Math.sin(actor.gait) : 0;
++    const bodyBob = moving ? Math.abs(stride) * 3 : Math.sin(this.frame * 2.3) * 0.6;
++    const s = 128 / img.height;
++    c.save(); c.scale(actor.facing, 1); c.translate(hit ? Math.sin(time * 90) * 3 : 0, -bodyBob);
++    if (hit) c.filter = 'sepia(1) saturate(3) hue-rotate(325deg)';
++    c.scale(s, s);
++    // Puppet joints retain the painted texture; each leg swings around its hip.
++    for (const [x, sign] of [[40, 1], [108, -1]]) {
++      c.save(); c.translate(x + 30 - img.width / 2, -142); c.rotate(stride * sign * 0.28);
++      c.drawImage(img, x, 320, 68, 142, -30, 0, 68, 142); c.restore();
++    }
++    const bend = acting && ['gather', 'craft'].includes(p.action.kind) ? Math.sin(actionAge / 0.5 * Math.PI) * 0.17 : 0;
++    c.translate(0, -142); c.rotate(bend);
++    c.drawImage(img, 43, 0, 125, 320, 43 - img.width / 2, -320, 125, 320);
++    // Left and right arms remain individually animated rather than a wobbling whole cutout.
++    for (const [x, sign] of [[0, 1], [164, -1]]) {
++      c.save(); c.translate(x + 24 - img.width / 2, -185);
++      c.rotate(acting ? sign * Math.sin(actionAge / 0.5 * Math.PI) * 0.85 : stride * sign * 0.28);
++      c.drawImage(img, x, 270, 48, 106, -24, -7, 48, 106); c.restore();
++    }
++    c.restore();
++    if (p.inventory.axe) { c.save(); c.translate(23 * actor.facing, -35); c.rotate(acting ? Math.sin(actionAge * 12) * 0.9 : -0.3); this.sprite('item-axe', 46); c.restore(); }
++    if (p.torchUntil > time) { this.sprite('item-torch', 51, -24 * actor.facing, -33); this.flame(-24 * actor.facing, -79, 7); }
++  }
++  flame(x, y, size) {
++    const c = this.ctx, pulse = this.reducedMotion.matches ? 0 : Math.sin(this.frame * 13) * size * 0.2;
++    c.save(); c.translate(x, y);
++    for (let i = 0; i < 3; i++) {
++      const s = size * (1 - i * 0.23); c.fillStyle = ['#b54f1f', '#ef9c39', '#ffe6a1'][i]; c.strokeStyle = '#512e1d'; c.lineWidth = i ? 0 : 1.5;
++      c.beginPath(); c.moveTo(-s, 8); c.bezierCurveTo(-s * 1.5, -s, s * 0.2 + pulse, -s * 1.5, -s * 0.1, -s * 3.5 - pulse); c.bezierCurveTo(s * 0.9, -s * 2.4, s * 0.4, -s * 0.8, s, -s * 1.6); c.bezierCurveTo(s * 1.7, 0, s, s, 0, s); c.closePath(); c.fill(); if (!i) c.stroke();
++    }
++    c.restore();
++  }
++  drawFire(f, time) {
++    const active = f.until > time, c = this.ctx;
++    if (active) {
++      const glow = c.createRadialGradient(0, -10, 5, 0, -10, 75); glow.addColorStop(0, '#e4b15a40'); glow.addColorStop(1, '#e4b15a00'); c.fillStyle = glow; c.fillRect(-75, -85, 150, 150);
++    }
++    for (let i = 0; i < 7; i++) {
++      const a = i / 7 * 6.28; c.save(); c.translate(Math.cos(a) * 27, Math.sin(a) * 13); c.rotate(a / 5); this.sprite('rock', 14); c.restore();
++    }
++    c.strokeStyle = '#211c14'; c.lineWidth = 10; c.lineCap = 'round'; c.beginPath(); c.moveTo(-18, -4); c.lineTo(20, 8); c.moveTo(-18, 9); c.lineTo(16, -5); c.stroke();
++    c.strokeStyle = '#6a4d30'; c.lineWidth = 6; c.stroke();
++    if (active) {
++      this.flame(0, -13, 17);
++      for (let i = 0; i < 5; i++) {
++        const age = (this.frame * 0.55 + i / 5) % 1;
++        c.globalAlpha = 1 - age; this.ellipse(Math.sin(age * 8 + i) * 13, -40 - age * 55, 1.2, 1.8, '#efc37f');
++      }
++    }
++  }
++  drawEnemy(e, time) {
++    this.ellipse(0, 1, 28, 9, '#17170f50');
++    const c = this.ctx;
++    const age = e.hitAt === undefined ? 2 : time - e.hitAt;
++    c.translate(0, Math.sin(this.frame * 7 + e.x) * 1.5);
++    if (age < 0.3) { c.rotate(Math.sin(age * 30) * 0.1); c.filter = 'sepia(1) saturate(3) hue-rotate(325deg)'; }
++    this.sprite('spider', 68);
++    if (e.health < 60) { c.fillStyle = '#17170f'; c.fillRect(-20, -77, 40, 4); c.fillStyle = '#b86142'; c.fillRect(-20, -77, 40 * e.health / 60, 4); }
++  }
++  drawAction(pos, action, time) {
++    const age = time - action.at, c = this.ctx;
++    if (!['gather', 'attack'].includes(action.kind)) return;
++    c.save(); c.globalAlpha = Math.max(0, 1 - age / 0.65);
++    c.strokeStyle = action.kind === 'attack' ? '#efe0b6' : '#b4a16d'; c.lineWidth = 2;
++    for (let i = 0; i < 7; i++) {
++      const a = i / 7 * Math.PI * 2, d = 8 + age * 36;
++      c.beginPath(); c.moveTo(pos.x + Math.cos(a) * d, pos.y - 30 + Math.sin(a) * d * 0.5); c.lineTo(pos.x + Math.cos(a) * (d + 5), pos.y - 30 + Math.sin(a) * (d + 5) * 0.5); c.stroke();
++    }
++    c.restore();
++  }
++  drawName(x, y, name, self) {
++    const c = this.ctx; c.font = '12px "Wildwood Serif", serif'; c.textAlign = 'center';
++    c.lineWidth = 3; c.strokeStyle = '#1b1b14'; c.strokeText(name, x, y); c.fillStyle = self ? '#eadbb7' : '#c8d1c3'; c.fillText(name, x, y);
++  }
++  drawDarkness(state) {
++    const c = this.ctx, overlay = this.darkness;
++    if (overlay.width !== Math.ceil(this.width) || overlay.height !== Math.ceil(this.height)) { overlay.width = Math.ceil(this.width); overlay.height = Math.ceil(this.height); }
++    const o = overlay.getContext('2d'); o.globalCompositeOperation = 'source-over'; o.clearRect(0, 0, overlay.width, overlay.height);
++    o.fillStyle = state.phase === 'night' ? 'rgba(8,14,25,0.88)' : 'rgba(91,42,25,0.27)'; o.fillRect(0, 0, this.width, this.height); o.globalCompositeOperation = 'destination-out';
++    const lights = state.fires.filter(f => f.until > state.time).map(f => ({ ...f, radius: 215 }));
++    state.players.filter(p => !p.dead && p.torchUntil > state.time).forEach(p => lights.push({ ...p, radius: 175 }));
++    for (const f of lights) {
++      const p = this.project(f.x, f.y), radius = (f.radius + Math.sin(this.frame * 5) * 3) * this.scale;
++      const g = o.createRadialGradient(p.x, p.y - 20, 15, p.x, p.y, radius); g.addColorStop(0, '#000'); g.addColorStop(0.55, '#000000ee'); g.addColorStop(1, '#00000000');
++      o.fillStyle = g; o.beginPath(); o.arc(p.x, p.y, radius, 0, 6.28); o.fill();
++    }
++    c.drawImage(overlay, 0, 0, this.width, this.height);
++  }
++  hitTest(state, x, y) {
++    if (!state) return null;
++    return state.objects.filter(o => o.amount > 0).filter(o => {
++      const name = o.type === 'tree' && o.variant === 1 ? 'tree-sparse' : o.type;
++      const image = this.assets[name], alpha = this.alpha[name];
++      if (!image || !alpha) return false;
++      const point = this.project(o.x, o.y);
++      const height = HEIGHTS[o.type] * (o.type === 'tree' ? 0.92 + o.variant * 0.12 : 0.95 + o.variant * 0.06) * this.scale;
++      const width = image.width / image.height * height;
++      const u = (x - point.x + width / 2) / width, v = (y - point.y + height) / height;
++      if (u < 0 || u >= 1 || v < 0 || v >= 1) return false;
++      const ix = Math.min(image.width - 1, Math.floor((o.variant === 2 ? 1 - u : u) * image.width));
++      const iy = Math.floor(v * image.height);
++      return alpha[(iy * image.width + ix) * 4 + 3] > 80;
++    }).sort((a, b) => b.x + b.y - a.x - a.y)[0] || null;
++  }
++}
++export function drawMap(canvas, state, id, full = false) {
++  const c = canvas.getContext('2d'), w = canvas.width, h = canvas.height, pad = full ? 24 : 6;
++  c.fillStyle = '#332e22'; c.fillRect(0, 0, w, h);
++  const scale = Math.min(w - pad * 2, h - pad * 2) / 2400, ox = (w - 2400 * scale) / 2, oy = (h - 2400 * scale) / 2;
++  c.fillStyle = '#a39060'; c.fillRect(ox, oy, 2400 * scale, 2400 * scale);
++  for (let i = 0; i < 18; i++) {
++    c.fillStyle = i % 2 ? '#615d3950' : '#c9b47a40'; c.beginPath(); c.ellipse(ox + noise(i, 8) * 2400 * scale, oy + noise(i, 19) * 2400 * scale, (70 + noise(i, 5) * 400) * scale, (70 + noise(i, 6) * 350) * scale, noise(i, 7), 0, 6.28); c.fill();
++  }
++  c.strokeStyle = '#4c40294f'; c.lineWidth = full ? 5 : 2; c.beginPath(); c.moveTo(ox, oy + 1150 * scale); c.bezierCurveTo(ox + 1000 * scale, oy + 850 * scale, ox + 1300 * scale, oy + 1600 * scale, ox + 2400 * scale, oy + 1250 * scale); c.stroke();
++  if (!state) return;
++  for (const o of state.objects.filter(o => o.amount)) { c.fillStyle = { tree: '#333b23', grass: '#877444', rock: '#e0ccb0', berry: '#844739', sapling: '#49502c' }[o.type]; const s = full ? 3 : 1.4; c.fillRect(ox + o.x * scale, oy + o.y * scale, s, s); }
++  for (const e of state.enemies.filter(e => e.health > 0)) { c.fillStyle = '#883f32'; c.beginPath(); c.arc(ox + e.x * scale, oy + e.y * scale, full ? 3 : 2, 0, 6.28); c.fill(); }
++  for (const f of state.fires.filter(f => f.until > state.time)) { c.fillStyle = '#f7bd67'; c.fillRect(ox + f.x * scale - 3, oy + f.y * scale - 3, 6, 6); }
++  for (const p of state.players) {
++    const x = ox + p.x * scale, y = oy + p.y * scale;
++    c.fillStyle = p.id === id ? '#ffe0a1' : '#a6c4d7'; c.strokeStyle = '#352d20'; c.lineWidth = 1.5; c.beginPath(); c.arc(x, y, full ? 6 : 3.5, 0, 6.28); c.fill(); c.stroke();
++    if (full) { c.font = '12px sans-serif'; c.textAlign = 'center'; c.fillStyle = '#231e15'; c.fillText(p.name, x, y - 11); }
++  }
++}
++export function drawClock(canvas, time) {
++  const c = canvas.getContext('2d'), cx = 85, cy = 85;
++  c.clearRect(0, 0, 170, 170);
++  c.fillStyle = '#302920'; c.strokeStyle = '#17140f'; c.lineWidth = 4;
++  c.beginPath(); c.arc(cx, cy, 79, 0, 6.28); c.fill(); c.stroke();
++  for (let i = 0; i < 24; i++) {
++    const a = i / 24 * 6.28 - Math.PI / 2, b = (i + 1) / 24 * 6.28 - Math.PI / 2;
++    c.beginPath(); c.moveTo(cx, cy); c.arc(cx, cy, 71, a + 0.015, b - 0.015); c.closePath(); c.fillStyle = i < 14 ? '#bdaa69' : i < 19 ? '#a46543' : '#586073'; c.fill();
++  }
++  c.fillStyle = '#cdbb87'; c.strokeStyle = '#32281a'; c.lineWidth = 3; c.beginPath(); c.arc(cx, cy, 52, 0, 6.28); c.fill(); c.stroke();
++  c.strokeStyle = '#e5d5ac'; c.lineWidth = 1; c.beginPath(); c.arc(cx, cy, 75, 0, 6.28); c.stroke();
++  const a = time % 180 / 180 * 6.28 - Math.PI / 2;
++  c.fillStyle = '#221d16'; c.beginPath(); c.moveTo(cx + Math.cos(a) * 62, cy + Math.sin(a) * 62); c.lineTo(cx + Math.cos(a + 0.13) * 82, cy + Math.sin(a + 0.13) * 82); c.lineTo(cx + Math.cos(a - 0.13) * 82, cy + Math.sin(a - 0.13) * 82); c.closePath(); c.fill();
++}
+diff --git a/src/style.css b/src/style.css
+new file mode 100644
+--- /dev/null
++++ b/src/style.css
+@@ -0,0 +1,14 @@
++@font-face{font-family:'Wildwood Serif';src:url('../public/fonts/zcool-xiaowei.woff2') format('woff2');font-style:normal;font-weight:400 700;font-display:swap}
++:root{font-family:'Microsoft YaHei','PingFang SC',sans-serif;color:#e4d6b5;background:#191810;font-synthesis:none;color-scheme:dark;--gold:#dbc48e;--ink:#262218;--paper:#c6b385;--muted:#c0b599}
++*{box-sizing:border-box}body{margin:0}button,input{font:inherit}button{cursor:pointer;border:0;background:none;color:inherit}button:disabled{cursor:not-allowed}a{color:inherit;text-decoration:none}button,input,a{-webkit-tap-highlight-color:transparent}button:focus-visible,a:focus-visible,input:focus-visible,canvas:focus-visible{outline:2px solid #f0d69b;outline-offset:4px}::selection{background:#ddc489;color:#241e15}input{caret-color:#e8cd90}::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:#8a7752}.icon{display:block;width:21px;height:21px;flex-shrink:0}.hidden{display:none!important}
++#app{height:100dvh;min-height:400px;position:relative;overflow:hidden}.game-layout{position:absolute;inset:0}.world-panel{position:absolute;inset:0;overflow:hidden;background:#77704d}.world-panel>canvas{width:100%;height:100%;display:block;touch-action:none}.topbar{position:absolute;top:17px;left:25px;right:245px;z-index:5;display:flex;align-items:center;gap:18px;pointer-events:none}.topbar>*{pointer-events:auto}.brand{display:flex;align-items:center;gap:10px;filter:drop-shadow(0 2px 2px #16140f)}.brand-mark{color:#d2c08c}.brand-mark .icon{width:29px;height:36px;stroke-width:1.5}.brand>span:last-child{font-family:'Wildwood Serif',serif;font-size:24px;letter-spacing:3px;text-shadow:1px 2px #211c12}.brand small{display:none}.world-label{display:none}.top-actions{display:flex;gap:8px;align-items:center;margin-left:15px}.connection{font-size:10px;color:#e3d8b7;text-shadow:1px 1px #211c12}.connection:before,.live-dot{content:'';display:inline-block;width:5px;height:5px;background:#bcc690;border-radius:50%;margin-right:5px}.connection.offline{color:#f4b68d}.connection.offline:before{background:#c3795a}.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:36px;padding:9px 14px;font-size:12px;border:2px solid #17140e;background:#393122;box-shadow:inset 0 0 0 1px #a59062;transition:filter .15s,transform .15s}.button:hover{filter:brightness(1.17)}button:active{transform:translateY(1px)}.button.primary{background:#bea578;color:#241e14;font-weight:700}.button.outline{background:#312c20db;color:#eddbac}.top-actions .button{font-size:11px;min-height:32px;padding:6px 10px}.top-actions .button .icon{width:16px;height:16px}.icon-button{padding:7px;display:inline-flex;align-items:center;justify-content:center;color:#e1cc9f;transition:filter .15s}.icon-button:hover{filter:brightness(1.3)}.top-actions .icon-button{background:#282218b0;border:1px solid #a28b5959}.top-actions .icon-button .icon{width:17px;height:17px}
++.scene-heading,.scene-vignette,.scene-line{display:none}.world-location{position:absolute;top:65px;left:28px;font-family:'Wildwood Serif',serif;font-size:14px;display:flex;align-items:center;gap:7px;text-shadow:1px 2px 2px #201a11;color:#e1d2ae}.world-location .icon{width:13px;height:13px}.coordinate{font-family:sans-serif;font-size:9px;color:#d9cdae;opacity:.75;margin-left:9px}.world-map-button{position:absolute;right:25px;bottom:25px;z-index:4;padding:10px;background:#342d20;border:3px double #b4a178;color:#e4d3aa;transform:rotate(2deg)}.world-map-button .icon{width:29px;height:29px}.objective{position:absolute;left:50%;top:24px;transform:translateX(-50%);display:flex;align-items:center;gap:11px;text-shadow:1px 2px 3px #2b2316;pointer-events:none;max-width:350px}.objective-symbol{color:#ead6a4}.objective-symbol .icon{width:30px;height:35px}.objective-caption{font-family:'Wildwood Serif',serif;font-size:17px;color:#f1dfb1}.objective p{font-size:10px;color:#eadcb9;margin:5px 0 7px}.objective-progress{height:2px;width:180px;background:#2b291f77}.objective-progress>span{display:block;height:100%;width:100%;background:#e4cb91;transform:scaleX(0);transform-origin:left;transition:transform .25s}.objective>span:last-child{font-size:10px;color:#e6d4a6}.world-bottom{position:absolute;left:24px;right:95px;bottom:26px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}.world-bottom>*{pointer-events:auto}.season{display:flex;gap:6px;align-items:center;font-family:'Wildwood Serif',serif;font-size:13px;text-shadow:1px 2px 2px #181810}.season .icon{width:15px;height:15px}.keyboard-hints{display:flex;gap:15px;position:absolute;bottom:75px;left:50%;transform:translateX(-50%);font-size:10px;text-shadow:1px 1px 2px #181810;white-space:nowrap;opacity:.85}.keyboard-hints span{display:flex;align-items:center;gap:5px}kbd{font:10px sans-serif;display:inline-flex;align-items:center;justify-content:center;padding:2px 4px;border:1px solid #baa776;color:#efddb2;background:#29271b9c}.text-button{font-size:11px;display:inline-flex;align-items:center;gap:8px;color:#e2cfa4;padding:5px 0}.text-button .icon{width:16px;height:16px}.text-button:hover{color:#fff1c5}.world-bottom .text-button{background:#29241abb;padding:8px 10px;border:1px solid #9b885659}.interaction{position:absolute;left:50%;top:63%;transform:translateX(-50%);z-index:4;display:flex;align-items:center;gap:17px;background:#262217dd;border:1px solid #a68d59;padding:8px 12px;color:#eee0b6;font-family:'Wildwood Serif',serif;font-size:16px;white-space:nowrap}.interaction button{font-family:sans-serif;font-size:11px}.world-alert{position:absolute;left:50%;bottom:155px;transform:translateX(-50%);z-index:4;background:#302016e8;border:1px solid #bd8155;padding:10px 16px;color:#f1c399;font-size:12px}.death-panel{position:absolute;inset:0;background:#161a18ce;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:25px}.death-panel h2{font-family:'Wildwood Serif',serif;font-size:32px;color:#e9d8ac}.death-panel p{font-size:12px;color:#c9bea4;line-height:1.9;margin-bottom:20px}
++.craft-panel{position:absolute;left:12px;top:50%;transform:translateY(-50%);z-index:5;width:65px;max-height:calc(100% - 200px);overflow:visible;display:flex;flex-direction:column;align-items:center}.panel-heading,.panel-subtitle,.craft-tabs,.craft-note,.guide-link{display:none}.recipes{display:flex;flex-direction:column;gap:8px;align-items:center}.recipe{position:relative;width:56px;height:57px;padding:3px;text-align:left;color:#e5d2a1;border:3px solid #211c12;background:#4d4430;box-shadow:inset 0 0 0 1px #a8956b;transition:filter .15s,transform .15s}.recipe:nth-child(even){transform:rotate(2deg)}.recipe:nth-child(odd){transform:rotate(-2deg)}.recipe:hover,.recipe:focus-visible{filter:brightness(1.15);z-index:6}.recipe.active{background:#7a6340;box-shadow:inset 0 0 0 1px #e6c789}.recipe-icon{width:100%;height:100%;display:flex;align-items:center;justify-content:center}.recipe-icon .icon{width:37px;height:37px;stroke-width:1.3}.recipe-icon img{width:45px;height:45px;object-fit:contain;filter:drop-shadow(1px 2px 1px #17120d)}.recipe-copy{display:none;position:absolute;left:63px;top:-2px;width:205px;padding:13px 15px;background:#282319f2;border:2px solid #887449;box-shadow:0 6px 15px #15120c50}.recipe:hover .recipe-copy,.recipe:focus-visible .recipe-copy{display:block}.recipe-title{display:flex;justify-content:space-between;font-family:'Wildwood Serif',serif;font-size:20px;margin-bottom:9px}.recipe-title .icon{width:14px;height:14px}.recipe-cost{display:flex;gap:9px;font-size:10px;line-height:1.8;flex-wrap:wrap}.recipe-cost .short{color:#e4a379}.recipe-cost .enough{color:#d6d493}.recipe-desc{font-size:10px;display:block;line-height:1.8;margin-top:7px;color:#d6c6a3}
++.survival-panel{position:absolute;right:22px;top:15px;z-index:4;width:206px;pointer-events:none}.survival-panel button{pointer-events:auto}.day-section{position:relative;margin-left:auto;width:146px;text-align:center}.day-section>canvas{display:block;width:146px;height:146px}.day-center{position:absolute;top:41px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;color:#302718;text-shadow:0 1px #decc9b}.day-center>span{font-family:'Wildwood Serif',serif;font-size:32px;line-height:1.1}.day-center>small{font-size:9px;margin-top:4px}.phase-label{display:flex;justify-content:center;gap:5px;align-items:center;font-size:10px;color:#e3cfa0;text-shadow:1px 1px 2px #15140d;margin-top:2px}.phase-label .icon{width:13px;height:13px}.phase-label strong{font-weight:400}.phase-label>span:last-child{font-size:9px;color:#d3c5a6}.survival-panel>.status-heading{display:none}.stats{display:flex;gap:7px;margin-top:15px;justify-content:flex-end}.stat{position:relative;width:59px;height:62px;border-radius:48% 51% 45% 49%;border:3px solid #201910;background:#80604a;box-shadow:inset 0 0 0 2px #bfa07a,0 2px 4px #20170d7c;display:flex;align-items:center;justify-content:center;color:#2c1e14}.stat.hunger{background:#b29a61;box-shadow:inset 0 0 0 2px #d3bd7e,0 2px 4px #20170d7c}.stat.sanity{background:#a59173;box-shadow:inset 0 0 0 2px #cfb990,0 2px 4px #20170d7c}.stat-icon{transform:translateY(-5px)}.stat-icon .icon{width:28px;height:28px;stroke-width:2}.stat-info{position:absolute;bottom:5px;left:0;right:0;text-align:center}.stat-label>span:first-child,.stat-label small,.stat-track{display:none}.stat-label strong{font:11px sans-serif;color:#f4e6c4;text-shadow:1px 1px #261c12}.minimap-heading{display:none}.minimap-button{margin:21px 0 0 auto;width:129px;display:block;padding:3px;border:3px solid #211b13;background:#a18c61;transform:rotate(-2deg);box-shadow:0 3px 9px #17170f6c}.minimap-button canvas{display:block;width:117px;height:88px}.minimap-button>span{display:none}.companions{margin-top:13px;text-align:right;color:#e6d1a5;font-size:10px;text-shadow:1px 1px 2px #1e190f}.companions .status-heading{display:flex;justify-content:flex-end;gap:8px;align-items:center}.status-heading h2{margin:0;font-family:'Wildwood Serif',serif;font-size:15px;font-weight:400}.status-heading>span{font-size:9px}.player-row{display:flex;justify-content:flex-end;gap:7px;margin-top:6px;font-size:10px}.player-avatar{display:none}.self-label{font-size:9px;color:#cbbd9a}.companions>.text-button{font-size:10px;margin-top:8px}.companions>.text-button .icon{width:13px;height:13px}
++.inventory-bar{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);z-index:5;display:flex;align-items:center;gap:6px;padding:8px 12px;background:#2b261bc9;border:3px double #b5a078;box-shadow:0 5px 15px #17170f6c}.inventory-label,.inventory-tail{display:none}.inventory-slots{display:flex;gap:5px}.slot{position:relative;width:60px;height:61px;background:#6b5d40;border:3px solid #292215;box-shadow:inset 0 0 0 1px #ad986a;display:flex;align-items:center;justify-content:center;padding:3px;transition:filter .15s}.slot:nth-child(3n){transform:rotate(1deg)}.slot:nth-child(3n+1){transform:rotate(-1deg)}.slot:hover{filter:brightness(1.18);border-color:#d5bd82}.slot:disabled img{opacity:.28;filter:grayscale(.5)}.slot.filled{background:#88724b}.slot img{width:48px;height:49px;object-fit:contain;filter:drop-shadow(1px 2px 1px #22170e);pointer-events:none}.slot-index{position:absolute;top:1px;left:3px;font-size:9px;color:#d7c79d}.slot-count{position:absolute;right:3px;bottom:2px;font-size:13px;color:#fff0cd;text-shadow:1px 1px #281c12}.slot-name{display:none}.toast{position:fixed;z-index:50;left:50%;bottom:116px;transform:translateX(-50%);font-family:'Wildwood Serif',serif;font-size:17px;padding:10px 17px;color:#f0ddb2;background:#2c261ce8;border:2px solid #9c8153;max-width:min(90vw,500px);box-shadow:0 5px 15px #13140f50}.toast.error{color:#efbf97;border-color:#ac7953}
++.chat-panel{position:absolute;bottom:90px;right:26px;width:310px;background:#28231bf2;border:2px solid #967b50;z-index:7}.chat-heading{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-bottom:1px solid #806b44}.chat-heading strong{font-family:'Wildwood Serif',serif;font-size:16px;font-weight:400}.chat-heading .icon{width:16px;height:16px}.messages{max-height:170px;min-height:60px;overflow:auto;padding:9px 12px}.messages p{font-size:11px;line-height:1.8;color:#cbbd9d;margin:4px 0;overflow-wrap:anywhere}.messages p.chat{color:#efe0be}.chat-panel form{display:flex;border-top:1px solid #806b44}.chat-panel input{flex:1;min-width:0;background:none;border:0;color:#e8d8b2;padding:12px;font-size:11px}.chat-panel input::placeholder{color:#c5b898}.chat-panel form button{padding:10px;color:#dcc08b}.chat-panel form button .icon{width:17px;height:17px}
++dialog{background:#322b1f;color:#e4d4af;border:5px double #ae9464;width:min(470px,calc(100vw - 30px));padding:25px 29px;max-height:calc(100dvh - 35px);overflow:auto;box-shadow:0 15px 60px #11130cbf}dialog::backdrop{background:#11150db3}.dialog-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px;color:#d3b67a}.dialog-header>.icon{width:27px;height:27px}dialog h2{font-family:'Wildwood Serif',serif;font-size:31px;font-weight:400;line-height:1.5;margin:0 0 12px;color:#e8d6ad}dialog>p{font-size:12px;line-height:1.8;color:#cec1a1;margin:0 0 23px}dialog form{display:flex;flex-direction:column;gap:10px}dialog label{font-size:11px;color:#d6c6a5;margin-top:5px}dialog input{padding:12px;border:1px solid #a08a5e;background:#242017;color:#ead9b5;font-size:13px;width:100%}dialog input::placeholder{color:#beae8d}.code-field{display:flex;position:relative}.code-field input{padding-right:45px;text-transform:uppercase;letter-spacing:2px}.code-field button{position:absolute;right:3px;top:3px;padding:9px}.code-field .icon{width:19px;height:19px}.field-note{font-size:10px;line-height:1.7;margin:0 0 10px;color:#c6b797}.room-note{font-size:9px!important;text-align:center;line-height:1.9!important;margin:21px 0 0!important;color:#bba984!important}#help-dialog{width:min(580px,calc(100vw - 30px))}.guide-rows{display:flex;flex-direction:column;gap:22px;margin:24px 0}.guide-rows section{display:flex;gap:16px}.guide-rows section>.icon{width:27px;height:27px;color:#d0b174;margin-top:3px}.guide-rows h3{font-family:'Wildwood Serif',serif;font-size:19px;font-weight:400;margin:0 0 8px}.guide-rows p{font-size:11px;line-height:1.85;color:#d3c3a1;margin:0}#help-dialog>.button{width:100%;margin-top:20px}#map-dialog{width:min(740px,calc(100vw - 24px));padding:20px}#map-dialog h2{font-size:23px;margin:0}#fullmap{width:100%;height:auto;display:block}.map-legend{display:flex;justify-content:center;gap:20px;margin-top:12px;font-size:10px;color:#d2c29d}.map-legend span{display:flex;gap:6px;align-items:center}.map-legend i{width:6px;height:6px;border-radius:50%}.gold{background:#f4d28d}.blue{background:#92c0d1}.red{background:#d18c73}.touch-controls,.mobile-toolbar{display:none}
++@media(max-width:1100px) and (min-width:701px){.topbar{right:210px;gap:7px;left:16px}.brand>span:last-child{font-size:20px}.top-actions{margin-left:0;gap:5px}.connection{display:none}.objective{top:95px;left:50%;max-width:280px}.survival-panel{right:13px;width:175px}.day-section{width:125px}.day-section>canvas{width:125px;height:125px}.day-center{top:35px}.day-center>span{font-size:28px}.stat{width:51px;height:55px}.stats{gap:5px}.minimap-button{width:112px}.minimap-button canvas{width:100px;height:75px}.inventory-bar{bottom:16px}.slot{width:51px;height:54px}.slot img{width:42px;height:43px}.keyboard-hints{bottom:66px}}
++@media(max-width:700px){#app{min-height:400px}.topbar{left:12px;top:14px;right:95px;display:block}.brand{gap:5px}.brand-mark .icon{width:19px;height:26px}.brand>span:last-child{font-size:20px;letter-spacing:2px}.top-actions{gap:6px;margin:10px 0 0}.connection,#sound-button{display:none}.top-actions .button{font-size:9px;padding:4px 6px;min-height:27px}.top-actions .button .icon{width:13px;height:13px}.top-actions .icon-button{padding:5px}.top-actions .icon-button .icon{width:15px;height:15px}.world-location{left:14px;top:91px;font-size:12px}.coordinate{font-size:8px;margin-left:3px}.survival-panel{right:9px;top:8px;width:85px}.day-section{width:84px}.day-section>canvas{width:84px;height:84px}.day-center{top:23px}.day-center>span{font-size:21px}.day-center>small{font-size:6px;margin-top:2px}.phase-label{font-size:8px;gap:3px}.phase-label .icon{width:11px;height:11px}.phase-label>span:last-child{display:none}.stats{gap:4px;margin-top:8px;justify-content:flex-end;flex-wrap:wrap;width:85px}.stat{width:38px;height:40px;border-width:2px}.stat-icon{transform:translateY(-4px)}.stat-icon .icon{width:17px;height:17px;stroke-width:2}.stat-label strong{font-size:8px}.stat-info{bottom:3px}.minimap-button,.companions{display:none}.objective{left:14px;top:121px;transform:none;max-width:235px;gap:7px;align-items:flex-start}.objective-symbol .icon{width:19px;height:24px}.objective-caption{font-size:14px}.objective p{font-size:8px;line-height:1.8;margin:3px 0 6px}.objective-progress{width:145px}.objective>span:last-child{font-size:8px;margin-top:5px}.craft-panel{display:none}.craft-panel.mobile-open{display:flex;left:10px;top:200px;bottom:125px;transform:none;width:53px;max-height:none;overflow:visible}.recipe{width:45px;height:47px}.recipes{gap:7px}.recipe-icon img{width:35px;height:37px}.recipe-icon .icon{width:30px;height:30px}.recipe-copy{left:49px;width:193px;top:0;padding:10px 12px}.recipe-title{font-size:17px}.recipe-desc{font-size:9px}.recipe-cost{font-size:9px}.inventory-bar{bottom:53px;padding:5px 7px;border-width:2px;max-width:calc(100% - 14px)}.inventory-slots{gap:3px}.slot{width:39px;height:44px;border-width:2px}.slot img{width:31px;height:35px}.slot-index{font-size:7px;top:0;left:2px}.slot-count{font-size:10px;bottom:1px;right:2px}.inventory-bar.mobile-open{background:#463925fa}.mobile-toolbar{position:absolute;bottom:10px;left:14px;right:90px;display:flex;gap:15px;align-items:center;z-index:6;pointer-events:none}.mobile-toolbar>*{pointer-events:auto}.mobile-toolbar button{display:flex;gap:5px;align-items:center;font-size:10px;color:#e6d5ad;background:#282317c9;border:1px solid #a48e5e;padding:6px}.mobile-toolbar .icon{width:15px;height:15px}.mobile-toolbar>span{display:none}.world-map-button{bottom:9px;right:12px;padding:5px;border-width:2px}.world-map-button .icon{width:20px;height:20px}.world-bottom{left:15px;right:15px;bottom:107px}.season{display:none}.keyboard-hints{display:none}.world-bottom #chat-button{margin-left:auto;font-size:9px;padding:5px 7px}.world-bottom #chat-button .icon{width:13px;height:13px}.world-bottom kbd{display:none}.touch-controls{position:absolute;bottom:112px;left:13px;right:15px;display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none;z-index:3}.touch-dpad{display:grid;grid-template-columns:repeat(3,33px);grid-template-rows:repeat(2,33px);gap:3px;pointer-events:auto}.touch-dpad button{border:2px solid #292319;background:#5a5036c9;color:#f0ddb0;font-size:17px;touch-action:none;user-select:none}.touch-dpad button:active{background:#a38b58}.touch-dpad button[data-direction=up]{grid-column:2}.touch-dpad button[data-direction=left]{grid-column:1;grid-row:2}.touch-dpad button[data-direction=down]{grid-column:2;grid-row:2}.touch-dpad button[data-direction=right]{grid-column:3;grid-row:2}.touch-actions{display:flex;gap:7px;pointer-events:auto;margin-bottom:23px}.touch-actions button{width:42px;height:44px;border:3px solid #241e13;background:#6a5835d9;padding:7px;color:#ecd6a3}.touch-actions .icon{width:21px;height:21px}.interaction{top:64%;padding:7px 9px;font-size:14px;gap:10px}.interaction button{font-size:10px}.toast{bottom:226px;font-size:15px;padding:9px 12px;width:max-content;max-width:calc(100% - 25px);text-align:center}.world-alert{bottom:227px;font-size:10px;width:calc(100% - 32px);text-align:center}.chat-panel{bottom:112px;right:13px;width:calc(100% - 26px)}dialog{padding:22px}dialog h2{font-size:27px}.map-legend{gap:10px;font-size:9px}.death-panel h2{font-size:25px}}
++@media(max-height:550px) and (min-width:701px){.craft-panel{max-height:calc(100% - 115px)}.recipe{width:44px;height:44px}.recipe-icon img{width:34px;height:35px}.recipes{gap:5px}.survival-panel .minimap-button,.companions{display:none}.day-section{width:103px}.day-section>canvas{width:103px;height:103px}.day-center{top:28px}.day-center>span{font-size:24px}.stats{margin-top:8px}.objective{top:22px}.keyboard-hints{display:none}}
++@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+diff --git a/tests/game.spec.js b/tests/game.spec.js
+new file mode 100644
+--- /dev/null
++++ b/tests/game.spec.js
+@@ -0,0 +1,167 @@
++import { test, expect } from '@playwright/test';
++import { mkdir, writeFile } from 'node:fs/promises';
++
++function observe(page) {
++  const data = { state: null, id: null, errors: [], results: [] };
++  page.on('pageerror', error => data.errors.push(error.message));
++  page.on('websocket', ws => ws.on('framereceived', event => {
++    let message; try { message = JSON.parse(event.payload); } catch { return; }
++    if (message.type === 'state') data.state = message.state;
++    if (message.type === 'joined') data.id = message.id;
++    if (message.type === 'result') data.results.push(message);
++  }));
++  return data;
++}
++const me = data => data.state?.players.find(p => p.id === data.id);
++async function ready(page, data, code) {
++  await page.goto(`/?room=${code}`);
++  await expect.poll(() => !!me(data)).toBe(true);
++  await page.evaluate(() => document.fonts.ready);
++  await expect(page.locator('#world')).toHaveAttribute('data-assets', 'ready');
++}
++async function clickResource(page, data, id) {
++  const object = data.state.objects.find(o => o.id === id);
++  const p = me(data), rect = await page.locator('#world').boundingBox();
++  // Camera interpolation has settled before screen-space interaction.
++  const scale = rect.width < 600 ? 0.72 : 0.93;
++  const x = rect.x + rect.width / 2 + (object.x - object.y - p.x + p.y) * 0.82 * scale;
++  const y = rect.y + rect.height * 0.51 + (object.x + object.y - p.x - p.y) * 0.43 * scale - 7 * scale;
++  // Pick an actual opaque pixel of this target, not a transparent gap near its base.
++  // Other trees can overlap it; match renderer hit-test rather than clicking blindly.
++  for (const dy of [-10, -20, -32, -45, -60, -80, -105]) {
++    for (const dx of [0, -7, 7, -15, 15]) {
++      await page.mouse.move(x + dx * scale, y + dy * scale);
++      if (await page.locator('#world').getAttribute('data-hover') === id) {
++        await page.mouse.click(x + dx * scale, y + dy * scale);
++        return;
++      }
++    }
++  }
++  throw new Error(`Resource ${id} has no exposed opaque hit point`);
++}
++
++test('two real browser clients share movement, gathering, campfire, chat and disconnect', async ({ browser }) => {
++  test.setTimeout(180_000);
++  await mkdir('evidence', { recursive: true });
++  const aContext = await browser.newContext({ viewport: { width: 1440, height: 900 }, recordVideo: { dir: 'evidence/redesign/videos', size: { width: 1440, height: 900 } } });
++  const bContext = await browser.newContext({ viewport: { width: 1440, height: 900 } });
++  const a = await aContext.newPage(), b = await bContext.newPage();
++  const da = observe(a), db = observe(b), code = `T${Date.now().toString(36).toUpperCase()}`;
++  await ready(a, da, code); await ready(b, db, code);
++  await expect.poll(() => da.state.players.length).toBe(2);
++  await expect(b.locator('#room-count')).toContainText('2/8');
++  const start = { x: me(da).x, y: me(da).y };
++  await a.keyboard.down('d'); await expect.poll(() => me(da).x - start.x).toBeGreaterThan(30);
++  await expect(a.locator('#world')).toHaveAttribute('data-animation', 'walk');
++  await a.screenshot({ path: 'evidence/redesign/walk-frame.png' });
++  await a.keyboard.up('d');
++  await expect.poll(() => db.state.players.find(p => p.id === da.id)?.x - start.x).toBeGreaterThan(30);
++  await a.keyboard.down('a'); await expect.poll(() => me(da).x, { intervals: [20] }).toBeLessThan(start.x + 6); await a.keyboard.up('a');
++  // Gather through actual pointer interactions with scene objects.
++  await expect.poll(() => Math.abs(me(da).x - 1200)).toBeLessThan(12);
++  for (let i = 0; i < 3; i++) {
++    await clickResource(a, da, 'start1');
++    await expect.poll(() => me(da).inventory.wood).toBe(i + 1);
++    if (i === 0) {
++      await expect(a.locator('#world')).toHaveAttribute('data-animation', 'gather');
++      await a.screenshot({ path: 'evidence/redesign/gather-frame.png' });
++      await expect.poll(() => db.state.players.find(p => p.id === da.id)?.action?.kind).toBe('gather');
++    }
++    await expect.poll(() => da.state.time - me(da).hurtAt).toBeGreaterThan(0.4);
++    await a.waitForTimeout(450);
++  }
++  for (let i = 0; i < 3; i++) {
++    await clickResource(a, da, 'start0');
++    await expect.poll(() => me(da).inventory.grass).toBe(i + 1);
++    await a.waitForTimeout(450);
++  }
++  await expect.poll(() => db.state.objects.find(o => o.id === 'start0').amount).toBe(3);
++  await a.locator('[data-recipe="campfire"]').click();
++  await expect.poll(() => da.state.fires.length).toBe(1);
++  await expect.poll(() => db.state.fires.length).toBe(1);
++  expect(me(da).inventory.wood).toBe(0); expect(me(da).inventory.grass).toBe(0);
++  await expect(a.locator('#objective-count')).toHaveText('完成');
++  await a.locator('#chat-button').click();
++  await a.locator('#chat-input').fill('一起守住这堆火！');
++  await a.locator('#chat-form button').click();
++  await expect.poll(() => db.state.events.some(e => e.text.includes('一起守住这堆火'))).toBe(true);
++  await b.locator('#chat-button').click();
++  await expect(b.locator('#messages')).toContainText('一起守住这堆火');
++  await b.locator('#close-chat').click();
++  await a.locator('#close-chat').click();
++  await a.locator('#help-button').click(); await expect(a.locator('#help-dialog')).toBeVisible(); await a.keyboard.press('Escape');
++  await a.locator('#map-button').click(); await expect(a.locator('#map-dialog')).toBeVisible(); await a.keyboard.press('Escape');
++  await expect(a.locator('#toast')).not.toBeVisible();
++  await a.screenshot({ path: 'evidence/desktop.png', fullPage: true });
++  // Shared fire protects both real browser players during the actual server day/night cycle.
++  await expect.poll(() => da.state.phase, { timeout: 140_000, intervals: [1000] }).toBe('night');
++  const hpA = me(da).health, hpB = me(db).health;
++  const sanityA = me(da).sanity;
++  await expect.poll(() => da.state.time % 180, { timeout: 15_000 }).toBeGreaterThan(150);
++  expect(me(da).health).toBe(hpA); expect(me(db).health).toBe(hpB);
++  expect(me(da).sanity).toBeGreaterThanOrEqual(sanityA);
++  await a.screenshot({ path: 'evidence/night.png', fullPage: true });
++  const evidence = { room: code, players: da.state.players.map(p => ({ name: p.name, id: p.id })), sharedFire: da.state.fires[0], sharedResourceAmount: db.state.objects.find(o => o.id === 'start0').amount, movementSeenByPeer: true, chatSeenByPeer: true, actualNightCycle: true, sharedFireProtectedTwoPlayers: true, browserErrors: [...da.errors, ...db.errors] };
++  await bContext.close();
++  await expect.poll(() => da.state.players.length).toBe(1);
++  evidence.disconnectSeenByPeer = true;
++  await writeFile('evidence/multiplayer.json', JSON.stringify(evidence, null, 2));
++  expect(da.errors).toEqual([]); expect(db.errors).toEqual([]);
++  await aContext.close();
++});
++
++test('mobile touchscreen layout supports actual movement, crafting panel, inventory and map', async ({ browser }) => {
++  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
++  const page = await context.newPage(), data = observe(page);
++  await ready(page, data, `M${Date.now().toString(36).toUpperCase()}`);
++  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
++  await expect(page.locator('.touch-controls')).toBeVisible();
++  const x = me(data).x;
++  const button = await page.locator('[data-direction="right"]').boundingBox();
++  await page.mouse.move(button.x + 15, button.y + 15); await page.mouse.down();
++  await expect.poll(() => me(data).x - x).toBeGreaterThan(20); await page.mouse.up();
++  await page.locator('#mobile-craft').tap(); await expect(page.locator('.craft-panel')).toBeVisible();
++  await page.locator('[data-recipe="axe"]').tap(); await expect(page.locator('#toast')).toContainText('材料不足');
++  await page.locator('#mobile-craft').tap();
++  await page.locator('#mobile-bag').tap(); await expect(page.locator('.inventory-bar')).toBeVisible();
++  await page.locator('#mobile-bag').tap();
++  await page.locator('#map-button').tap(); await expect(page.locator('#map-dialog')).toBeVisible();
++  await page.locator('[data-close="map-dialog"]').tap();
++  await expect(page.locator('#toast')).not.toBeVisible();
++  await page.screenshot({ path: 'evidence/mobile.png', fullPage: true });
++  expect(data.errors).toEqual([]);
++  await writeFile('evidence/mobile.json', JSON.stringify({ noHorizontalOverflow: true, movement: true, craftError: true, bag: true, map: true, browserErrors: data.errors }, null, 2));
++  await context.close();
++});
++
++test('world creation, room isolation, form validation and safe chat rendering', async ({ page }) => {
++  const data = observe(page); await ready(page, data, 'ISOLATE');
++  await page.locator('#room-button').click();
++  await page.locator('#name-input').fill('<b>旅人</b>');
++  await page.locator('#code-input').fill('!');
++  await page.locator('#join-form button[type="submit"]').click();
++  await expect(page.locator('#room-dialog')).toBeVisible();
++  await page.locator('#create-world').click();
++  await expect(page.locator('#room-dialog')).not.toBeVisible();
++  await expect.poll(() => data.state.code).not.toBe('ISOLATE'); expect(data.state.players.length).toBe(1);
++  await page.locator('#chat-button').click();
++  await page.locator('#chat-input').fill('<img src=x onerror=alert(1)>'); await page.locator('#chat-form button').click();
++  await expect(page.locator('#messages')).toContainText('<img src=x onerror=alert(1)>');
++  await expect(page.locator('#messages img')).toHaveCount(0);
++  expect(data.errors).toEqual([]);
++});
++
++test('network interruption reconnects without frozen movement', async ({ browser }) => {
++  const context = await browser.newContext();
++  const page = await context.newPage(), data = observe(page);
++  await ready(page, data, `R${Date.now().toString(36).toUpperCase()}`);
++  const oldId = data.id;
++  await context.setOffline(true);
++  await expect(page.locator('#connection')).not.toHaveText('已连接', { timeout: 40_000 });
++  await context.setOffline(false);
++  await expect.poll(() => data.id !== oldId, { timeout: 20_000 }).toBe(true);
++  await expect(page.locator('#connection')).toHaveText('已连接');
++  expect(me(data).x).toBe(1200); expect(me(data).y).toBe(1200);
++  expect(data.errors).toEqual([]);
++  await context.close();
++});
+diff --git a/tests/network.test.js b/tests/network.test.js
+new file mode 100644
+--- /dev/null
++++ b/tests/network.test.js
+@@ -0,0 +1,52 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import { spawn } from 'node:child_process';
++import { once } from 'node:events';
++import { WebSocket } from 'ws';
++
++const port = 3137;
++async function waitFor(check, timeout = 6000) {
++  const end = Date.now() + timeout;
++  while (Date.now() < end) { if (check()) return; await new Promise(resolve => setTimeout(resolve, 30)); }
++  throw new Error('Condition timed out');
++}
++async function client() {
++  const socket = new WebSocket(`ws://127.0.0.1:${port}/ws`);
++  const data = { messages: [], state: null, id: null };
++  socket.on('message', raw => { const m = JSON.parse(raw); data.messages.push(m); if (m.type === 'state') data.state = m.state; if (m.type === 'joined') data.id = m.id; });
++  await once(socket, 'open');
++  return { socket, data, send: m => socket.send(JSON.stringify(m)) };
++}
++test('production transport rejects malformed payloads, isolates rooms, caps players and preserves old room on failure', async () => {
++  const server = spawn(process.execPath, ['server/index.js', '--production'], { env: { ...process.env, PORT: String(port), HOST: '127.0.0.1' }, stdio: ['ignore', 'pipe', 'pipe'] });
++  const clients = [];
++  try {
++    await once(server.stdout, 'data');
++    const first = await client(); clients.push(first);
++    first.socket.send('{');
++    await waitFor(() => first.data.messages.some(m => m.type === 'error'));
++    first.send({ type: 'join', code: 'FULL01', name: '先行者' }); await waitFor(() => first.data.state?.players.length === 1);
++    first.send({ type: 'craft', recipe: '__proto__' });
++    await waitFor(() => first.data.messages.some(m => m.message === '未知配方'));
++    for (let i = 0; i < 7; i++) { const c = await client(); clients.push(c); c.send({ type: 'join', code: 'FULL01', name: `旅人${i}` }); await waitFor(() => c.data.id); }
++    await waitFor(() => first.data.state.players.length === 8);
++    const ninth = await client(); clients.push(ninth); ninth.send({ type: 'join', code: 'OTHER1', name: '第九人' }); await waitFor(() => ninth.data.state?.code === 'OTHER1');
++    const id = ninth.data.id;
++    ninth.send({ type: 'join', code: 'FULL01' });
++    await waitFor(() => ninth.data.messages.some(m => m.message?.includes('已有 8 位')));
++    ninth.send({ type: 'chat', text: '原世界仍可用' });
++    await waitFor(() => ninth.data.state.events.some(e => e.text.includes('原世界仍可用')));
++    assert.equal(ninth.data.id, id); assert.equal(ninth.data.state.code, 'OTHER1');
++    assert.equal(first.data.state.events.some(e => e.text.includes('原世界仍可用')), false);
++    ninth.send({ type: 'input', x: 'invalid', y: 0 }); await waitFor(() => ninth.data.messages.some(m => m.message === '无效方向'));
++    assert.equal((await fetch(`http://127.0.0.1:${port}/health`)).status, 200);
++    clients[1].socket.close(); await waitFor(() => first.data.state.players.length === 7);
++    const overlarge = await client(); clients.push(overlarge); overlarge.socket.on('error', () => {});
++    const closed = once(overlarge.socket, 'close'); overlarge.socket.send('x'.repeat(5000)); await closed;
++    assert.equal(overlarge.socket.readyState, WebSocket.CLOSED);
++  } finally {
++    for (const c of clients) c.socket.terminate();
++    server.kill();
++    await once(server, 'exit');
++  }
++});
+diff --git a/tests/visual.spec.js b/tests/visual.spec.js
+new file mode 100644
+--- /dev/null
++++ b/tests/visual.spec.js
+@@ -0,0 +1,59 @@
++import { test, expect } from '@playwright/test';
++import { writeFile } from 'node:fs/promises';
++
++test('full-screen painted world, edge HUD, synchronized action feedback and render performance', async ({ browser }) => {
++  const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, recordVideo: { dir: 'evidence/redesign/videos', size: { width: 1280, height: 800 } } });
++  const page = await context.newPage();
++  const errors = []; page.on('pageerror', e => errors.push(e.message));
++  await page.goto('/?room=VISUAL01');
++  await expect(page.locator('#world')).toHaveAttribute('data-assets', 'ready');
++  const world = await page.locator('#world').boundingBox();
++  expect(world.width).toBe(1280); expect(world.height).toBe(800);
++  const craft = await page.locator('.craft-panel').boundingBox(); expect(craft.width).toBeLessThan(80);
++  await expect(page.locator('.scene-heading')).not.toBeVisible();
++  await expect(page.locator('.inventory-slots img')).toHaveCount(8);
++  // Feed authentic protocol snapshots into the actual renderer to exercise attack/hit/death,
++  // without adding privileged test endpoints to the shipped server.
++  await page.evaluate(() => {
++    const NativeSocket = window.WebSocket;
++    const sockets = [];
++    window.WebSocket = class extends NativeSocket { constructor(...args) { super(...args); sockets.push(this); } };
++    window.__visualSockets = sockets;
++  });
++  await page.context().setOffline(true); await page.context().setOffline(false);
++  await expect.poll(() => page.evaluate(() => window.__visualSockets.length)).toBeGreaterThan(0);
++  await expect(page.locator('#connection')).toHaveText('已连接');
++  const feedback = await page.evaluate(async () => {
++    const socket = window.__visualSockets.at(-1);
++    let snapshot;
++    await new Promise(resolve => {
++      function received(event) {
++        const message = JSON.parse(event.data);
++        if (message.type === 'state') { snapshot = message.state; socket.removeEventListener('message', received); resolve(); }
++      }
++      socket.addEventListener('message', received);
++    });
++    const p = snapshot.players[0];
++    p.inventory.axe = 1; p.action = { kind: 'attack', at: snapshot.time }; p.hurtAt = snapshot.time;
++    snapshot.enemies[0].x = p.x + 40; snapshot.enemies[0].y = p.y; snapshot.enemies[0].hitAt = snapshot.time;
++    socket.dispatchEvent(new window.MessageEvent('message', { data: JSON.stringify({ type: 'state', state: snapshot }) }));
++    await new Promise(resolve => requestAnimationFrame(resolve));
++    return { animation: document.querySelector('#world').dataset.animation, snapshot };
++  });
++  expect(feedback.animation).toBe('attack');
++  await page.screenshot({ path: 'evidence/redesign/attack-hit.png' });
++  const timing = await page.evaluate(async () => {
++    const frames = [];
++    let previous = performance.now();
++    for (let i = 0; i < 90; i++) {
++      await new Promise(resolve => requestAnimationFrame(resolve));
++      const now = performance.now(); frames.push(now - previous); previous = now;
++    }
++    frames.sort((a, b) => a - b);
++    return { medianMs: frames[45], p95Ms: frames[85], frames: 90 };
++  });
++  expect(timing.medianMs).toBeLessThan(45);
++  await writeFile('evidence/redesign/performance.json', JSON.stringify({ ...timing, viewport: '1280x800', browserErrors: errors }, null, 2));
++  expect(errors).toEqual([]);
++  await context.close();
++});
+diff --git a/tests/world.test.js b/tests/world.test.js
+new file mode 100644
+--- /dev/null
++++ b/tests/world.test.js
+@@ -0,0 +1,111 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import { World, phaseAt, RECIPES } from '../server/world.js';
++
++function setup() { const world = new World('TEST01'); return { world, p: world.addPlayer('a', '旅人') }; }
++function step(world) { world.tick(0.4); }
++test('map is deterministic and phase boundaries are precise', () => {
++  assert.deepEqual(new World('X', 1).objects, new World('X', 1).objects);
++  assert.notDeepEqual(new World('X', 1).objects, new World('X', 2).objects);
++  assert.deepEqual([0, 104.9, 105, 144.9, 145, 179.9, 180].map(phaseAt), ['day', 'day', 'dusk', 'dusk', 'night', 'night', 'day']);
++});
++test('gather validates proximity, depletion, regenerates and rejects race', () => {
++  const { world, p } = setup();
++  const target = world.objects.find(o => o.id === 'start0');
++  assert.equal(world.command('a', { type: 'gather', id: target.id }).ok, true);
++  assert.equal(p.inventory.grass, 1);
++  step(world); p.x = 10; p.y = 10;
++  assert.equal(world.command('a', { type: 'gather', id: target.id }).ok, false);
++  p.x = target.x; p.y = target.y; target.amount = 1;
++  assert.equal(world.command('a', { type: 'gather', id: target.id }).ok, true);
++  const second = world.addPlayer('b', '同伴'); second.x = target.x; second.y = target.y;
++  assert.equal(world.command('b', { type: 'gather', id: target.id }).ok, false);
++  world.time = target.regrow; world.tick(0.1); assert.equal(target.amount, 3);
++});
++test('resource yields and axe bonus are server owned', () => {
++  const { world, p } = setup();
++  const rock = world.objects.find(o => o.id === 'start3'); p.x = rock.x; p.y = rock.y;
++  assert.equal(world.command('a', { type: 'gather', id: rock.id }).ok, true);
++  assert.equal(p.inventory.stone, 1); assert.equal(p.inventory.flint, 1);
++  step(world); const tree = world.objects.find(o => o.id === 'start4'); p.x = tree.x; p.y = tree.y; p.inventory.axe = 1;
++  world.command('a', { type: 'gather', id: tree.id }); assert.equal(p.inventory.wood, 2);
++});
++test('every recipe spends exact costs, rejects unavailable ingredients and requires fire', () => {
++  for (const [name, recipe] of Object.entries(RECIPES)) {
++    const { world, p } = setup();
++    assert.equal(world.command('a', { type: 'craft', recipe: name }).ok, false);
++    for (const [item, count] of Object.entries(recipe.costs)) p.inventory[item] = count;
++    if (recipe.needsFire) {
++      assert.equal(world.command('a', { type: 'craft', recipe: name }).ok, false);
++      world.fires.push({ id: 'f1', x: p.x, y: p.y, until: world.time + 100 });
++    }
++    assert.equal(world.command('a', { type: 'craft', recipe: name }).ok, true);
++    for (const item of Object.keys(recipe.costs)) assert.equal(p.inventory[item], 0);
++    if (name === 'campfire') { assert.equal(world.fires.length, 1); assert.equal(p.craftedFire, true); }
++    else if (name === 'fuel') assert.equal(world.fires[0].until, world.time + 160);
++    else assert.equal(p.inventory[name], 1);
++  }
++});
++test('food and torch are consumed with capped survival benefits', () => {
++  const { world, p } = setup();
++  p.inventory.berry = 1; p.health = 50; p.hunger = 50;
++  assert.equal(world.command('a', { type: 'use', item: 'berry' }).ok, true);
++  assert.equal(p.health, 53); assert.equal(p.hunger, 68); assert.equal(p.inventory.berry, 0);
++  step(world); assert.equal(world.command('a', { type: 'use', item: 'berry' }).ok, false);
++  p.inventory.cooked = 1; p.health = 99; p.hunger = 99;
++  world.command('a', { type: 'use', item: 'cooked' }); assert.equal(p.health, 100); assert.equal(p.hunger, 100);
++  step(world); p.inventory.torch = 1;
++  world.command('a', { type: 'use', item: 'torch' }); assert.equal(p.torchUntil, world.time + 90);
++});
++test('unlit night damages health and sanity; shared fire protects two players', () => {
++  const { world, p } = setup(); const b = world.addPlayer('b', '同行者'); world.enemies = []; world.time = 150;
++  world.tick(1); assert.ok(p.health < 100); assert.ok(p.sanity < 100);
++  world.fires.push({ id: 'f1', x: 1200, y: 1200, until: 300 });
++  const hp = p.health, hpB = b.health; world.tick(1); assert.equal(p.health, hp); assert.equal(b.health, hpB);
++  world.fires[0].until = world.time - 1; world.tick(1); assert.ok(p.health < hp);
++});
++test('starvation, death and revival follow the same authoritative path', () => {
++  const { world, p } = setup(); world.enemies = []; p.hunger = 0; p.health = 1;
++  world.tick(1); assert.equal(p.dead, true); assert.equal(p.health, 0);
++  assert.equal(world.command('a', { type: 'gather', id: 'start0' }).ok, false);
++  assert.equal(world.command('a', { type: 'revive' }).ok, true); assert.equal(p.health, 100); assert.equal(p.x, 1200);
++  assert.equal(world.command('a', { type: 'revive' }).ok, false);
++});
++test('movement bounds, normalized speed and invalid inputs', () => {
++  const { world, p } = setup();
++  assert.equal(world.command('a', { type: 'input', x: Infinity, y: 0 }).ok, false);
++  assert.equal(world.command('a', { type: 'move', x: '3', y: 0 }).ok, false);
++  world.command('a', { type: 'input', x: 100, y: 100 }); world.tick(1);
++  assert.ok(Math.abs(Math.hypot(p.x - 1200, p.y - 1200) - 125) < 0.001);
++  p.x = 2330; p.y = 2330; world.tick(1); assert.equal(p.x, 2330); assert.equal(p.y, 2330);
++  world.command('a', { type: 'move', x: -999, y: 9999 }); assert.deepEqual(p.target, { x: 70, y: 2330 });
++  assert.equal(world.command('a', { type: 'craft', recipe: '__proto__' }).ok, false);
++  assert.equal(world.command('a', { type: 'unknown' }).ok, false);
++  assert.equal(world.command('missing', { type: 'input', x: 0, y: 0 }).ok, false);
++});
++test('combat handles range, weapon damage, rewards and fire repulsion', () => {
++  const { world, p } = setup(); const enemy = world.enemies[0]; world.enemies = [enemy];
++  assert.equal(world.command('a', { type: 'attack' }).ok, false);
++  enemy.x = p.x + 20; enemy.y = p.y; p.inventory.axe = 1;
++  assert.equal(world.command('a', { type: 'attack' }).ok, true); assert.equal(enemy.health, 30);
++  step(world); world.command('a', { type: 'attack' }); assert.equal(enemy.health, 0); assert.equal(p.inventory.berry, 2);
++  enemy.health = 60; world.fires.push({ id: 'f', x: p.x, y: p.y, until: world.time + 100 });
++  const x = enemy.x; world.tick(1); assert.ok(enemy.x > x);
++});
++test('room state is isolated, player disconnects and snapshots omit input internals', () => {
++  const { world } = setup(); const other = new World('OTHER');
++  assert.equal(other.players.size, 0);
++  assert.equal('input' in world.snapshot().players[0], false);
++  world.removePlayer('a'); assert.equal(world.players.size, 0); assert.match(world.events.at(-1).text, /离开/);
++});
++test('click-to-move reaches a nearby destination without overshooting', () => {
++  const { world, p } = setup();
++  world.command('a', { type: 'move', x: 1206, y: 1200 });
++  world.tick(0.1); assert.equal(p.x, 1206);
++  world.tick(0.1); assert.equal(p.target, null); assert.equal(p.x, 1206);
++});
++test('chat validates, bounds content and keeps bounded event history', () => {
++  const { world } = setup(); assert.equal(world.command('a', { type: 'chat', text: '' }).ok, false);
++  for (let i = 0; i < 30; i++) world.command('a', { type: 'chat', text: 'a'.repeat(200) });
++  assert.equal(world.events.length, 20); assert.equal(world.events.at(-1).text.length, 103);
++});
+diff --git a/scripts/artifact-check.js b/scripts/artifact-check.js
+new file mode 100644
+--- /dev/null
++++ b/scripts/artifact-check.js
+@@ -0,0 +1,52 @@
++import { readFile, readdir, stat, writeFile, mkdir } from 'node:fs/promises';
++import { createHash } from 'node:crypto';
++import assert from 'node:assert/strict';
++import path from 'node:path';
++
++await mkdir('evidence', { recursive: true });
++const html = await readFile('dist/index.html', 'utf8');
++assert.match(html, /lang="zh-CN"/);
++assert.match(html, /\.\/assets\/index-/);
++const font = await readFile('dist/fonts/zcool-xiaowei.woff2');
++assert.equal(font.subarray(0, 4).toString(), 'wOF2');
++assert.match(await readFile('dist/fonts/OFL.txt', 'utf8'), /SIL OPEN FONT LICENSE/);
++const assets = await readdir('dist/assets');
++for (const filename of assets) {
++  const content = await readFile(path.join('dist/assets', filename), 'utf8');
++  assert.equal(/TODO|FIXME|Direction contract|FIRST VIEWPORT|0923de17/.test(content), false, `Development-only metadata leaked in ${filename}`);
++}
++const results = JSON.parse(await readFile('evidence/e2e-results.json', 'utf8'));
++assert.equal(results.stats.unexpected, 0);
++assert.equal(results.stats.expected, 5);
++const multiplayer = JSON.parse(await readFile('evidence/multiplayer.json', 'utf8'));
++for (const key of ['movementSeenByPeer', 'chatSeenByPeer', 'actualNightCycle', 'sharedFireProtectedTwoPlayers', 'disconnectSeenByPeer']) assert.equal(multiplayer[key], true);
++assert.deepEqual(multiplayer.browserErrors, []);
++for (const file of ['desktop.png', 'mobile.png', 'night.png']) {
++  const image = await readFile(path.join('evidence', file));
++  assert.equal(image.subarray(1, 4).toString(), 'PNG');
++  assert.ok(image.length > 20000);
++}
++const spriteFiles = (await readdir('public/art')).filter(file => file.endsWith('.png') && !file.includes('atlas'));
++for (const file of spriteFiles) {
++  const image = await readFile(`dist/art/${file}`);
++  assert.equal(image.subarray(1, 4).toString(), 'PNG');
++  assert.ok(image.length > 1000);
++}
++assert.ok(spriteFiles.length >= 17);
++const performanceResult = JSON.parse(await readFile('evidence/redesign/performance.json', 'utf8'));
++assert.ok(performanceResult.medianMs < 45);
++assert.ok((await readdir('evidence/redesign/videos')).some(file => file.endsWith('.webm')));
++const sources = ['index.html', 'package.json', '../package-lock.json', 'vite.config.js', 'INTEGRATION.md', 'eslint.config.js', 'playwright.config.js', 'README.md', 'PRODUCT.md', 'PLAN.md', 'DESIGN.md', ...await readdir('server').then(files => files.map(f => `server/${f}`)), ...await readdir('src').then(files => files.map(f => `src/${f}`)), ...await readdir('tests').then(files => files.map(f => `tests/${f}`)), 'scripts/artifact-check.js', 'scripts/extract-art.py', ...await readdir('public/art').then(files => files.map(file => `public/art/${file}`)), 'public/fonts/fonts.css', 'public/fonts/OFL.txt', 'public/fonts/zcool-xiaowei.woff2'];
++const manifest = [];
++let diff = '';
++for (const filename of sources) {
++  const bytes = await readFile(filename);
++  manifest.push({ path: filename, size: (await stat(filename)).size, sha256: createHash('sha256').update(bytes).digest('hex') });
++  if (!filename.endsWith('.woff2') && !filename.endsWith('.png') && !filename.endsWith('package-lock.json')) {
++    const lines = bytes.toString('utf8').trimEnd().split('\n');
++    diff += `diff --git a/${filename} b/${filename}\nnew file mode 100644\n--- /dev/null\n+++ b/${filename}\n@@ -0,0 +1,${lines.length} @@\n${lines.map(line => `+${line}`).join('\n')}\n`;
++  }
++}
++await writeFile('evidence/source-manifest.json', JSON.stringify({ generatedAt: new Date().toISOString(), baseline: 'Imported game workspace; parent repository package-lock.json included for dependency provenance.', files: manifest }, null, 2));
++await writeFile('evidence/new-files.diff', diff);
++console.log(`Artifact audit passed: 5 browser cases, 3 screenshots, 17+ integrated sprites, animation video, render timing, licensed WOFF2, built assets, ${manifest.length} source hashes, imported workspace manifest.`);
+diff --git a/scripts/extract-art.py b/scripts/extract-art.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/extract-art.py
+@@ -0,0 +1,55 @@
++"""Extract generated white-background atlas via edge-connected background removal.
++Pillow required only for asset authoring; not for gameplay or npm validation.
++"""
++from PIL import Image
++from collections import deque
++from pathlib import Path
++import json
++
++root = Path('public/art')
++import sys
++items = len(sys.argv) > 1 and sys.argv[1] == 'items'
++image = Image.open(Path('evidence/redesign') / ('items-atlas.png' if items else 'forest-atlas.png')).convert('RGBA')
++boxes = {'tree': (0, 0, 384, 522), 'tree-sparse': (384, 0, 768, 522),
++         'berry': (768, 0, 1152, 510), 'grass': (1152, 0, 1536, 510),
++         'rock': (0, 530, 384, 1024), 'sapling': (384, 530, 768, 1024),
++         'survivor': (768, 518, 1152, 1024), 'spider': (1152, 530, 1536, 1024)}
++if items:
++    names = ['item-wood','item-grass','item-stone','item-flint','item-berry','item-axe','item-torch','item-cooked']
++    boxes = {name: (i%4*384,i//4*512,(i%4+1)*384,(i//4+1)*512) for i,name in enumerate(names)}
++manifest = {}
++for name, box in boxes.items():
++    crop = image.crop(box)
++    w, h = crop.size
++    p = crop.load()
++    seen = set()
++    q = deque([(x, 0) for x in range(w)] + [(x, h-1) for x in range(w)] + [(0, y) for y in range(h)] + [(w-1, y) for y in range(h)])
++    while q:
++        x, y = q.popleft()
++        if (x, y) in seen or not (0 <= x < w and 0 <= y < h):
++            continue
++        seen.add((x, y))
++        r, g, b, a = p[x, y]
++        if min(r, g, b) < 227:
++            continue
++        p[x, y] = (r, g, b, 0)
++        q.extend([(x-1, y), (x+1, y), (x, y-1), (x, y+1)])
++    # Preserve enclosed pale face/shirt; remove white antialias contamination only at outer edges.
++    for x, y in seen:
++        r, g, b, a = p[x, y]
++        if a and min(r, g, b) >= 198:
++            if any(0 <= nx < w and 0 <= ny < h and p[nx, ny][3] == 0 for nx, ny in [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]):
++                p[x, y] = (r, g, b, max(0, int((255-min(r,g,b))*4)))
++    tight = crop.getchannel('A').getbbox()
++    crop = crop.crop(tight)
++    crop.save(root / f'{name}.png')
++    manifest[name] = {'path': f'/art/{name}.png', 'width': crop.width, 'height': crop.height, 'sourceBox': box}
++# Preview alpha against the actual game earth, not a checkerboard.
++preview = Image.new('RGB', (1200, 740), '#77704d')
++for i,(name, entry) in enumerate(manifest.items()):
++    asset = Image.open(root / f'{name}.png')
++    asset.thumbnail((270,330))
++    preview.paste(asset, (i%4*300+(300-asset.width)//2, i//4*370+345-asset.height), asset)
++preview.save('evidence/redesign/items-preview.png' if items else 'evidence/redesign/alpha-preview.png')
++(root / ('items.json' if items else 'sprites.json')).write_text(json.dumps(manifest, indent=2), encoding='utf8')
++print(f'Extracted {len(manifest)} sprites with transparent edge-connected backgrounds')
+diff --git a/public/art/items.json b/public/art/items.json
+new file mode 100644
+--- /dev/null
++++ b/public/art/items.json
+@@ -0,0 +1,90 @@
++{
++  "item-wood": {
++    "path": "/art/item-wood.png",
++    "width": 341,
++    "height": 266,
++    "sourceBox": [
++      0,
++      0,
++      384,
++      512
++    ]
++  },
++  "item-grass": {
++    "path": "/art/item-grass.png",
++    "width": 314,
++    "height": 421,
++    "sourceBox": [
++      384,
++      0,
++      768,
++      512
++    ]
++  },
++  "item-stone": {
++    "path": "/art/item-stone.png",
++    "width": 305,
++    "height": 381,
++    "sourceBox": [
++      768,
++      0,
++      1152,
++      512
++    ]
++  },
++  "item-flint": {
++    "path": "/art/item-flint.png",
++    "width": 189,
++    "height": 348,
++    "sourceBox": [
++      1152,
++      0,
++      1536,
++      512
++    ]
++  },
++  "item-berry": {
++    "path": "/art/item-berry.png",
++    "width": 337,
++    "height": 267,
++    "sourceBox": [
++      0,
++      512,
++      384,
++      1024
++    ]
++  },
++  "item-axe": {
++    "path": "/art/item-axe.png",
++    "width": 319,
++    "height": 432,
++    "sourceBox": [
++      384,
++      512,
++      768,
++      1024
++    ]
++  },
++  "item-torch": {
++    "path": "/art/item-torch.png",
++    "width": 202,
++    "height": 472,
++    "sourceBox": [
++      768,
++      512,
++      1152,
++      1024
++    ]
++  },
++  "item-cooked": {
++    "path": "/art/item-cooked.png",
++    "width": 318,
++    "height": 252,
++    "sourceBox": [
++      1152,
++      512,
++      1536,
++      1024
++    ]
++  }
++}
+diff --git a/public/art/PROVENANCE.md b/public/art/PROVENANCE.md
+new file mode 100644
+--- /dev/null
++++ b/public/art/PROVENANCE.md
+@@ -0,0 +1,13 @@
++# 游戏美术来源
++
++本轮依据用户明确要求《饥荒》画面效果，采用手绘墨线、交叉排线、暗橄榄／赭色的视觉语言；不是从原作游戏包提取贴图，不声称官方素材或官方授权。
++
++- 生成服务：本机配置的 gpt-image-2，实际生成调用结果保存在 `evidence/redesign/*generation.log`。
++- 世界对象原图：`evidence/redesign/forest-atlas.png`，提示 `atlas.prompt.txt`。
++- 物品原图：`evidence/redesign/items-atlas.png`，提示 `items.prompt.txt`。
++- 地表：`terrain.png`，提示 `evidence/redesign/terrain.prompt.txt`。
++- 透明精灵提取：`scripts/extract-art.py` 使用边缘连通白底分离，保留角色封闭区域内的浅色面部／衬衫；`sprites.json`、`items.json` 记录裁切坐标和尺寸。`evidence/redesign/alpha-preview.png`、`items-preview.png` 是真实底色上的透明检查。
++- 动画：`src/renderer.js` 中的分关节角色摆动、资源摇晃、火焰曲线、火光与命中粒子为项目源代码实现，服务器同步动作时间戳。
++- 参考画面：Steam 《Don't Starve Together》产品页公开截图，仅在 evidence 中用于比对，不随游戏发布。来源 https://store.steampowered.com/app/322330/Don't_Starve_Together/。
++
++图像是生成输出，不把它们描述成原作原创团队作品；本记录不是对生成素材作独占版权或商用授权保证。若将作品作为官方移植发行或使用原作标识，需要自行取得相应授权。字体的独立 OFL 许可见 `public/fonts/OFL.txt`。
+diff --git a/public/art/sprites.json b/public/art/sprites.json
+new file mode 100644
+--- /dev/null
++++ b/public/art/sprites.json
+@@ -0,0 +1,90 @@
++{
++  "tree": {
++    "path": "/art/tree.png",
++    "width": 344,
++    "height": 510,
++    "sourceBox": [
++      0,
++      0,
++      384,
++      522
++    ]
++  },
++  "tree-sparse": {
++    "path": "/art/tree-sparse.png",
++    "width": 223,
++    "height": 503,
++    "sourceBox": [
++      384,
++      0,
++      768,
++      522
++    ]
++  },
++  "berry": {
++    "path": "/art/berry.png",
++    "width": 333,
++    "height": 345,
++    "sourceBox": [
++      768,
++      0,
++      1152,
++      510
++    ]
++  },
++  "grass": {
++    "path": "/art/grass.png",
++    "width": 243,
++    "height": 385,
++    "sourceBox": [
++      1152,
++      0,
++      1536,
++      510
++    ]
++  },
++  "rock": {
++    "path": "/art/rock.png",
++    "width": 350,
++    "height": 336,
++    "sourceBox": [
++      0,
++      530,
++      384,
++      1024
++    ]
++  },
++  "sapling": {
++    "path": "/art/sapling.png",
++    "width": 170,
++    "height": 412,
++    "sourceBox": [
++      384,
++      530,
++      768,
++      1024
++    ]
++  },
++  "survivor": {
++    "path": "/art/survivor.png",
++    "width": 212,
++    "height": 462,
++    "sourceBox": [
++      768,
++      518,
++      1152,
++      1024
++    ]
++  },
++  "spider": {
++    "path": "/art/spider.png",
++    "width": 343,
++    "height": 245,
++    "sourceBox": [
++      1152,
++      530,
++      1536,
++      1024
++    ]
++  }
++}
+diff --git a/public/fonts/fonts.css b/public/fonts/fonts.css
+new file mode 100644
+--- /dev/null
++++ b/public/fonts/fonts.css
+@@ -0,0 +1,2 @@
++/* ZCOOL XiaoWei, copyright its authors. SIL Open Font License in OFL.txt. */
++@font-face{font-family:'Wildwood Serif';src:url('/fonts/zcool-xiaowei.woff2') format('woff2');font-style:normal;font-weight:400 700;font-display:swap}
+diff --git a/public/fonts/OFL.txt b/public/fonts/OFL.txt
+new file mode 100644
+--- /dev/null
++++ b/public/fonts/OFL.txt
+@@ -0,0 +1,93 @@
++Copyright 2018 The ZCOOL XiaoWei Project Authors (https://github.com/googlefonts/zcool-xiaowei/)
++
++This Font Software is licensed under the SIL Open Font License, Version 1.1.
++This license is copied below, and is also available with a FAQ at:
++http://scripts.sil.org/OFL
++
++
++-----------------------------------------------------------
++SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
++-----------------------------------------------------------
++
++PREAMBLE
++The goals of the Open Font License (OFL) are to stimulate worldwide
++development of collaborative font projects, to support the font creation
++efforts of academic and linguistic communities, and to provide a free and
++open framework in which fonts may be shared and improved in partnership
++with others.
++
++The OFL allows the licensed fonts to be used, studied, modified and
++redistributed freely as long as they are not sold by themselves. The
++fonts, including any derivative works, can be bundled, embedded, 
++redistributed and/or sold with any software provided that any reserved
++names are not used by derivative works. The fonts and derivatives,
++however, cannot be released under any other type of license. The
++requirement for fonts to remain under this license does not apply
++to any document created using the fonts or their derivatives.
++
++DEFINITIONS
++"Font Software" refers to the set of files released by the Copyright
++Holder(s) under this license and clearly marked as such. This may
++include source files, build scripts and documentation.
++
++"Reserved Font Name" refers to any names specified as such after the
++copyright statement(s).
++
++"Original Version" refers to the collection of Font Software components as
++distributed by the Copyright Holder(s).
++
++"Modified Version" refers to any derivative made by adding to, deleting,
++or substituting -- in part or in whole -- any of the components of the
++Original Version, by changing formats or by porting the Font Software to a
++new environment.
++
++"Author" refers to any designer, engineer, programmer, technical
++writer or other person who contributed to the Font Software.
++
++PERMISSION & CONDITIONS
++Permission is hereby granted, free of charge, to any person obtaining
++a copy of the Font Software, to use, study, copy, merge, embed, modify,
++redistribute, and sell modified and unmodified copies of the Font
++Software, subject to the following conditions:
++
++1) Neither the Font Software nor any of its individual components,
++in Original or Modified Versions, may be sold by itself.
++
++2) Original or Modified Versions of the Font Software may be bundled,
++redistributed and/or sold with any software, provided that each copy
++contains the above copyright notice and this license. These can be
++included either as stand-alone text files, human-readable headers or
++in the appropriate machine-readable metadata fields within text or
++binary files as long as those fields can be easily viewed by the user.
++
++3) No Modified Version of the Font Software may use the Reserved Font
++Name(s) unless explicit written permission is granted by the corresponding
++Copyright Holder. This restriction only applies to the primary font name as
++presented to the users.
++
++4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
++Software shall not be used to promote, endorse or advertise any
++Modified Version, except to acknowledge the contribution(s) of the
++Copyright Holder(s) and the Author(s) or with their explicit written
++permission.
++
++5) The Font Software, modified or unmodified, in part or in whole,
++must be distributed entirely under this license, and must not be
++distributed under any other license. The requirement for fonts to
++remain under this license does not apply to any document created
++using the Font Software.
++
++TERMINATION
++This license becomes null and void if any of the above conditions are
++not met.
++
++DISCLAIMER
++THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
++MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
++OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
++COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
++DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
++OTHER DEALINGS IN THE FONT SOFTWARE.

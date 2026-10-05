@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#202823" />
+  <meta name="description" content="荒野同行：原创中文网页联机生存游戏。探索、采集、制作，在夜幕降临前与朋友共同生起营火。" />
+  <title>荒野同行 · 联机生存</title>
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="荒野同行首页"><span class="brand-mark" data-icon="forest"></span><span>荒野同行<small>WILDWOOD · TOGETHER</small></span></a>
+      <div class="world-label"><span class="live-dot"></span><span>无尽荒野</span><span class="separator">/</span><span id="header-day">第 1 天</span></div>
+      <nav class="top-actions" aria-label="游戏菜单">
+        <span class="connection" id="connection">正在连接…</span>
+        <button id="room-button" class="button outline"><span data-icon="users"></span><span id="room-count">联机世界</span></button>
+        <button id="help-button" class="icon-button" aria-label="打开生存指南" title="生存指南"><span data-icon="book"></span></button>
+        <button id="sound-button" class="icon-button" aria-label="开启环境音效" title="开启环境音效"><span data-icon="sound"></span></button>
+      </nav>
+    </header>
+    <main class="game-layout">
+      <aside class="craft-panel" aria-label="制作面板">
+        <div class="panel-heading"><h2>制作</h2><span data-icon="tools"></span></div>
+        <p class="panel-subtitle">让双手创造生机</p>
+        <div class="craft-tabs" role="group" aria-label="配方分类"><button class="active" data-category="all">全部</button><button data-category="survival">生存</button><button data-category="tools">工具</button></div>
+        <div id="recipes" class="recipes"></div>
+        <div class="craft-note"><span data-icon="spark"></span><p>夜晚并不友好。<br>在天黑前，生起一堆火。</p></div>
+        <button class="text-button guide-link" id="guide-link"><span data-icon="book"></span>查阅生存指南 <span>↗</span></button>
+      </aside>
+      <section class="world-panel" aria-label="游戏世界">
+        <canvas id="world" tabindex="0" aria-label="荒野游戏地图。使用 WASD 或方向键移动，E 采集，F 攻击，点击地面移动。"></canvas>
+        <div class="scene-heading"><span class="scene-line"></span><div><h1>每一次日落，都是新的考验。</h1><p>收集资源，与同伴一起活到明天。</p></div></div>
+        <div class="world-location"><span data-icon="pin"></span><span id="location-label">林间空地</span><span class="coordinate" id="coordinates">1200, 1200</span></div>
+        <button id="map-button" class="world-map-button" aria-label="打开全景地图" title="全景地图 M"><span data-icon="map"></span></button>
+        <div class="objective"><span class="objective-symbol" data-icon="campfire"></span><div><span class="objective-caption">最初的火光</span><p id="objective-text">采集木材与干草，制作第一堆营火</p><div class="objective-progress"><span id="objective-progress"></span></div></div><span id="objective-count">0/6</span></div>
+        <div id="interaction" class="interaction hidden"><span id="interaction-name"></span><button id="gather-button"><kbd>E</kbd> 采集</button></div>
+        <div id="world-alert" class="world-alert hidden" role="status"></div>
+        <div class="scene-vignette"></div>
+        <div class="world-bottom"><span class="season"><span data-icon="leaf"></span>温和的秋日</span><div class="keyboard-hints"><span><kbd>W A S D</kbd> 移动</span><span><kbd>E</kbd> 采集</span><span><kbd>F</kbd> 攻击</span></div><button id="chat-button" class="text-button"><span data-icon="chat"></span><span>聊天</span><kbd>Enter</kbd></button></div>
+        <section class="chat-panel hidden" id="chat-panel" aria-label="世界聊天"><div class="chat-heading"><strong>世界的声音</strong><button id="close-chat" class="icon-button" aria-label="关闭聊天"><span data-icon="close"></span></button></div><div id="messages" class="messages" role="log" aria-live="polite"></div><form id="chat-form"><input id="chat-input" aria-label="聊天消息" placeholder="和同伴说点什么…" maxlength="100" autocomplete="off" /><button aria-label="发送消息"><span data-icon="send"></span></button></form></section>
+        <div class="touch-controls"><div class="touch-dpad"><button data-direction="up" aria-label="向上移动">↑</button><button data-direction="left" aria-label="向左移动">←</button><button data-direction="down" aria-label="向下移动">↓</button><button data-direction="right" aria-label="向右移动">→</button></div><div class="touch-actions"><button id="touch-gather" aria-label="采集"><span data-icon="hand"></span></button><button id="touch-attack" aria-label="攻击"><span data-icon="axe"></span></button></div></div>
+        <div id="death-panel" class="death-panel hidden"><h2>荒野记住了你的脚步。</h2><p>这次旅程暂时结束。重新出发，火光仍在等你。</p><button id="revive-button" class="button primary">重新出发</button></div>
+      </section>
+      <aside class="survival-panel" aria-label="生存状态">
+        <div class="day-section"><canvas id="clock" width="170" height="170" aria-hidden="true"></canvas><div class="day-center"><span id="clock-day">1</span><small>生存天数</small></div><div class="phase-label"><span data-icon="sun" id="phase-icon"></span><strong id="phase-name">白昼</strong><span id="phase-countdown">—</span></div></div>
+        <div class="status-heading"><h2>生存状态</h2><span id="player-name">旅人</span></div>
+        <div id="stats" class="stats"></div>
+        <div class="minimap-heading"><h2>周围的世界</h2><button id="expand-map" class="icon-button" aria-label="展开地图"><span data-icon="expand"></span></button></div>
+        <button class="minimap-button" id="minimap-button" aria-label="打开全景地图"><canvas id="minimap" width="200" height="150"></canvas><span>点击探索全景 <span>↗</span></span></button>
+        <div class="companions"><div class="status-heading"><h2>同行者</h2><span id="online-count">0 在线</span></div><div id="players"></div><button id="invite-button" class="text-button"><span data-icon="users"></span>邀请朋友同行 <span>↗</span></button></div>
+      </aside>
+    </main>
+    <footer class="inventory-bar"><div class="inventory-label"><span data-icon="bag"></span><div><strong>行囊</strong><small id="inventory-summary">旅途从这里开始</small></div></div><div class="inventory-slots" id="inventory"></div><div class="inventory-tail"><span id="torch-state">点击食物食用</span><span class="save-note">世界实时同步<span class="live-dot"></span></span></div></footer>
+    <div class="mobile-toolbar"><button id="mobile-craft"><span data-icon="tools"></span>制作</button><button id="mobile-bag"><span data-icon="bag"></span>行囊</button><span id="mobile-stats">生命 100 · 饥饿 100</span></div>
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+  </div>
+  <dialog id="room-dialog"><div class="dialog-header"><span data-icon="forest"></span><button data-close="room-dialog" class="icon-button" aria-label="关闭世界设置"><span data-icon="close"></span></button></div><h2>一个人走得快，<br>一起走得更远。</h2><p>给自己一个名字，带上同伴，出发吧。</p><form id="join-form"><label for="name-input">旅人的名字</label><input id="name-input" maxlength="12" value="林间旅人" autocomplete="nickname" required /><label for="code-input">世界代码</label><div class="code-field"><input id="code-input" maxlength="12" placeholder="WILD01" pattern="[A-Za-z0-9]{4,12}" autocomplete="off" /><button type="button" id="copy-code" title="复制世界链接" aria-label="复制世界链接"><span data-icon="copy"></span></button></div><p class="field-note">相同代码进入同一世界，最多 8 位同行者。</p><button class="button primary" type="submit"><span data-icon="arrow"></span>进入这个世界</button><button class="button outline" id="create-world" type="button">创建全新世界</button></form><p class="room-note">原创生存联机体验 · 非《饥荒》官方移植</p></dialog>
+  <dialog id="help-dialog"><div class="dialog-header"><span data-icon="book"></span><button data-close="help-dialog" class="icon-button" aria-label="关闭指南"><span data-icon="close"></span></button></div><h2>把荒野变成家。</h2><p>世界并不等待你准备好。记住这几件事。</p><div class="guide-rows"><section><span data-icon="hand"></span><div><h3>探索与采集</h3><p>WASD／方向键移动，也可点击地面。靠近资源按 E；点击树木、草丛与岩石，会先走近再采集。触屏使用左下方向键。</p></div></section><section><span data-icon="campfire"></span><div><h3>在黑夜之前，留下火光</h3><p>3 木材 + 3 干草制作营火。营火提供 150 秒光照，抵御黑暗与爬虫。靠近营火可添柴、烤浆果。火把使用后照明 90 秒。</p></div></section><section><span data-icon="heart"></span><div><h3>照顾好自己</h3><p>饥饿持续下降，空腹会失去生命。点击行囊中的浆果食用；黑夜没有光时，生命与理智会快速下降。倒下后可在空地重新出发。</p></div></section><section><span data-icon="axe"></span><div><h3>不必独自面对</h3><p>F 攻击附近的爬虫，石斧提升伤害。复制世界链接邀请朋友，Enter 打开聊天，M 查看全景地图。共享资源先到先得，营火照亮所有同行者。</p></div></section></div><p class="room-note">每个昼夜 180 秒 · 世界无活跃玩家时暂停 · 不自动持久存档</p><button data-close="help-dialog" class="button primary">去迎接第一缕火光</button></dialog>
+  <dialog id="map-dialog"><div class="dialog-header"><h2>无尽荒野</h2><button data-close="map-dialog" class="icon-button" aria-label="关闭地图"><span data-icon="close"></span></button></div><canvas id="fullmap" width="650" height="560" aria-label="全世界地图，金色标记为自己，蓝色为同伴，红色为怪物"></canvas><div class="map-legend"><span><i class="gold"></i>你的位置</span><span><i class="blue"></i>同行者</span><span><i class="red"></i>暗影爬虫</span></div></dialog>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

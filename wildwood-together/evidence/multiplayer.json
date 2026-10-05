@@ -1,0 +1,26 @@
+{
+  "room": "TMUUNY930",
+  "players": [
+    {
+      "name": "林间旅人",
+      "id": "63f9c3ba-07b2-4921-a2a8-e0f25332e167"
+    },
+    {
+      "name": "林间旅人",
+      "id": "c504aa6b-c558-42c2-a9a9-c55cae7f1a0d"
+    }
+  ],
+  "sharedFire": {
+    "id": "f3",
+    "x": 1203.4922147767506,
+    "y": 1220.5077852232494,
+    "until": 183.044237
+  },
+  "sharedResourceAmount": 3,
+  "movementSeenByPeer": true,
+  "chatSeenByPeer": true,
+  "actualNightCycle": true,
+  "sharedFireProtectedTwoPlayers": true,
+  "browserErrors": [],
+  "disconnectSeenByPeer": true
+}

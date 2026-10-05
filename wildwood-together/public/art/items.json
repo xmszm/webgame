@@ -1,0 +1,90 @@
+{
+  "item-wood": {
+    "path": "/art/item-wood.png",
+    "width": 341,
+    "height": 266,
+    "sourceBox": [
+      0,
+      0,
+      384,
+      512
+    ]
+  },
+  "item-grass": {
+    "path": "/art/item-grass.png",
+    "width": 314,
+    "height": 421,
+    "sourceBox": [
+      384,
+      0,
+      768,
+      512
+    ]
+  },
+  "item-stone": {
+    "path": "/art/item-stone.png",
+    "width": 305,
+    "height": 381,
+    "sourceBox": [
+      768,
+      0,
+      1152,
+      512
+    ]
+  },
+  "item-flint": {
+    "path": "/art/item-flint.png",
+    "width": 189,
+    "height": 348,
+    "sourceBox": [
+      1152,
+      0,
+      1536,
+      512
+    ]
+  },
+  "item-berry": {
+    "path": "/art/item-berry.png",
+    "width": 337,
+    "height": 267,
+    "sourceBox": [
+      0,
+      512,
+      384,
+      1024
+    ]
+  },
+  "item-axe": {
+    "path": "/art/item-axe.png",
+    "width": 319,
+    "height": 432,
+    "sourceBox": [
+      384,
+      512,
+      768,
+      1024
+    ]
+  },
+  "item-torch": {
+    "path": "/art/item-torch.png",
+    "width": 202,
+    "height": 472,
+    "sourceBox": [
+      768,
+      512,
+      1152,
+      1024
+    ]
+  },
+  "item-cooked": {
+    "path": "/art/item-cooked.png",
+    "width": 318,
+    "height": 252,
+    "sourceBox": [
+      1152,
+      512,
+      1536,
+      1024
+    ]
+  }
+}

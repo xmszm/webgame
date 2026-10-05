@@ -10,15 +10,16 @@
   "workspaces": [
     "5.6-sol我的世界",
     "fruit-ninja",
-    "starbound-brothers"
+    "starbound-brothers",
+    "wildwood-together"
   ],
   "scripts": {
     "build": "npm run build:apps && node scripts/assemble-dist.mjs && node scripts/verify-dist.mjs",
-    "build:apps": "npm run build --workspace=5.6-sol-minecraft && npm run build --workspace=blade-orchard-fruit-ninja && npm run build --workspace=starbound-brothers-platformer",
+    "build:apps": "npm run build --workspace=5.6-sol-minecraft && npm run build --workspace=blade-orchard-fruit-ninja && npm run build --workspace=starbound-brothers-platformer && npm run build --workspace=wildwood-together",
     "check": "npm run lint --workspaces --if-present && npm run test --workspaces --if-present && npm run build && npm run test:deploy",
     "test:deploy": "node scripts/smoke-dist.mjs",
     "test:e2e": "npm run test:e2e --workspaces --if-present",
-    "preview": "vite preview --host 0.0.0.0"
+    "preview": "node scripts/preview-site.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.0",
