@@ -53,8 +53,22 @@ function join(socket, message) {
   socket.playerId = randomUUID();
   const name = typeof message.name === 'string' ? message.name.replace(/[\x00-\x1f]/g, '').trim().slice(0, 12) : '';
   const player = room.addPlayer(socket.playerId, name || '旅人');
-  send(socket, { type: 'joined', id: socket.playerId, code: roomCode, name: player.name });
-  send(socket, { type: 'state', state: room.snapshot() });
+  // Clients that announce the delta protocol get the resource map once here and
+  // only revisions afterwards; older clients keep receiving it in every state.
+  socket.deltaProtocol = message.v >= 2;
+  socket.sentRevisions = new Map();
+  const joined = { type: 'joined', id: socket.playerId, code: roomCode, name: player.name };
+  if (socket.deltaProtocol) {
+    room.seedRevisions(socket.sentRevisions);
+    joined.objects = room.serializeObjects();
+  }
+  send(socket, joined);
+  send(socket, { type: 'state', state: roomState(socket) });
+}
+function roomState(socket) {
+  const state = socket.room.snapshot();
+  state.objects = socket.deltaProtocol ? socket.room.deltaObjects(socket.sentRevisions) : socket.room.serializeObjects();
+  return state;
 }
 wss.on('connection', socket => {
   socket.alive = true;
@@ -87,9 +101,9 @@ const tick = setInterval(() => {
   lastTick = now;
   for (const room of rooms.values()) if (room.players.size) room.tick(dt);
   for (const socket of wss.clients) {
-    if (socket.room && socket.readyState === WebSocket.OPEN && socket.bufferedAmount < 128_000) send(socket, { type: 'state', state: socket.room.snapshot() });
+    if (socket.room && socket.readyState === WebSocket.OPEN && socket.bufferedAmount < 128_000) send(socket, { type: 'state', state: roomState(socket) });
   }
-}, 100);
+}, 50);
 const heartbeat = setInterval(() => {
   for (const socket of wss.clients) {
     if (!socket.alive) { socket.terminate(); continue; }

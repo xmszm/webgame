@@ -18,6 +18,7 @@ const recipeDetails = {
 };
 let socket;
 let state = null;
+let worldObjects = [];
 let playerId = null;
 let category = 'all';
 let pendingGather = null;
@@ -63,6 +64,19 @@ function interpolateEntities(older, newer, key, k) {
     const before = older[key].find(item => item.id === entity.id);
     return before ? { ...entity, x: before.x + (entity.x - before.x) * k, y: before.y + (entity.y - before.y) * k } : entity;
   });
+}
+// The server sends the resource map once and afterwards only the objects whose
+// revision changed, so the client keeps one merged list for the whole session.
+function mergeObjects(existing, delta) {
+  if (!delta || !delta.length) return existing;
+  if (!existing || !existing.length) return delta;
+  const known = new Map(existing.map(object => [object.id, object]));
+  for (const object of delta) {
+    const current = known.get(object.id);
+    if (current) Object.assign(current, object);
+    else { existing.push(object); known.set(object.id, object); }
+  }
+  return existing;
 }
 function renderState(now) {
   const newest = snapshotHistory[snapshotHistory.length - 1];
@@ -122,7 +136,7 @@ function connect() {
   socket = new WebSocket(endpoint.href);
   socket.addEventListener('open', () => {
     retryDelay = 1000;
-    send({ type: 'join', ...profile });
+    send({ type: 'join', ...profile, v: 2 });
   });
   socket.addEventListener('message', event => {
     const message = JSON.parse(event.data);
@@ -130,6 +144,7 @@ function connect() {
       playerId = message.id;
       profile.code = message.code;
       profile.name = message.name;
+      worldObjects = message.objects || [];
       $('code-input').value = message.code;
       $('name-input').value = message.name;
       saveProfile();
@@ -141,8 +156,9 @@ function connect() {
       closeDialog($('room-dialog'));
     }
     if (message.type === 'state') {
-      state = message.state;
-      rememberSnapshot(message.state);
+      worldObjects = mergeObjects(worldObjects, message.state.objects);
+      state = { ...message.state, objects: worldObjects };
+      rememberSnapshot(state);
       updateUI();
       if (pendingGather && self()) {
         const target = state.objects.find(o => o.id === pendingGather);
@@ -307,7 +323,7 @@ function joinWorld(create = false) {
   profile.code = $('code-input').value.trim().toUpperCase() || 'WILD01';
   keys.clear();
   updateInput();
-  if (send({ type: 'join', ...profile, create })) pendingGather = null;
+  if (send({ type: 'join', ...profile, create, v: 2 })) pendingGather = null;
 }
 $('join-form').addEventListener('submit', event => { event.preventDefault(); joinWorld(); });
 $('create-world').addEventListener('click', () => joinWorld(true));

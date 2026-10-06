@@ -50,3 +50,44 @@ test('production transport rejects malformed payloads, isolates rooms, caps play
     await once(server, 'exit');
   }
 });
+
+test('delta protocol sends the resource map once, then only revisions, and stays compatible', async () => {
+  const deltaPort = 3140;
+  const server = spawn(process.execPath, ['server/index.js', '--production'], { env: { ...process.env, PORT: String(deltaPort), HOST: '127.0.0.1' }, stdio: ['ignore', 'pipe', 'pipe'] });
+  const sockets = [];
+  try {
+    await once(server.stdout, 'data');
+    const modern = new WebSocket(`ws://127.0.0.1:${deltaPort}/ws`);
+    sockets.push(modern);
+    const data = { joined: null, latest: null, states: 0 };
+    modern.on('message', raw => {
+      const message = JSON.parse(raw);
+      if (message.type === 'joined') data.joined = message;
+      if (message.type === 'state') { data.latest = message.state; data.states++; }
+    });
+    await once(modern, 'open');
+    modern.send(JSON.stringify({ type: 'join', code: 'DELTA1', name: '先行者', v: 2 }));
+    await waitFor(() => data.joined && data.latest);
+    assert.ok(data.joined.objects.length > 200, 'join carries the full resource map');
+    assert.equal('rev' in data.joined.objects[0], false, 'internal revision never leaves the server');
+    await waitFor(() => data.states > 5);
+    assert.deepEqual(data.latest.objects, [], 'an idle world sends no resource traffic');
+
+    modern.send(JSON.stringify({ type: 'gather', id: 'start0' }));
+    await waitFor(() => data.latest.objects.some(object => object.id === 'start0' && object.amount === 5));
+    assert.equal(data.latest.objects.length, 1, 'only the gathered object is resent');
+
+    const legacy = new WebSocket(`ws://127.0.0.1:${deltaPort}/ws`);
+    sockets.push(legacy);
+    const legacyState = { latest: null };
+    legacy.on('message', raw => { const message = JSON.parse(raw); if (message.type === 'state') legacyState.latest = message.state; });
+    await once(legacy, 'open');
+    legacy.send(JSON.stringify({ type: 'join', code: 'DELTA1', name: '旧客户端' }));
+    await waitFor(() => legacyState.latest?.players.length === 2);
+    assert.ok(legacyState.latest.objects.length > 200, 'clients without v2 still receive every object');
+  } finally {
+    for (const socket of sockets) socket.terminate();
+    server.kill();
+    await once(server, 'exit');
+  }
+});

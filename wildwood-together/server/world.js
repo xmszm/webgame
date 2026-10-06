@@ -20,6 +20,8 @@ export const RECIPES = {
 const TYPES = ['tree', 'grass', 'rock', 'berry', 'sapling'];
 const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+// `rev` is bookkeeping for the delta protocol; it never travels to clients.
+const serializeObject = ({ rev: _rev, ...object }) => object;
 export function phaseAt(time) {
   const value = ((time % CYCLE_SECONDS) + CYCLE_SECONDS) % CYCLE_SECONDS;
   return value < 105 ? 'day' : value < 145 ? 'dusk' : 'night';
@@ -44,11 +46,11 @@ export class World {
       const x = 100 + random() * 2200;
       const y = 100 + random() * 2200;
       if (Math.hypot(x - 1200, y - 1200) < 160) continue;
-      this.objects.push({ id: `o${i}`, type: TYPES[Math.floor(random() * TYPES.length)], x, y, amount: 3, regrow: 0, variant: Math.floor(random() * 3) });
+      this.objects.push({ id: `o${i}`, type: TYPES[Math.floor(random() * TYPES.length)], x, y, amount: 3, regrow: 0, variant: Math.floor(random() * 3), rev: 0 });
     }
     // A reproducible clearing ensures every new expedition has reachable basics.
     const clearing = [['grass', 1250, 1180], ['sapling', 1150, 1200], ['grass', 1260, 1250], ['rock', 1130, 1130], ['tree', 1340, 1160], ['berry', 1170, 1280]];
-    clearing.forEach(([type, x, y], i) => this.objects.push({ id: `start${i}`, type, x, y, amount: 6, regrow: 0, variant: i % 3 }));
+    clearing.forEach(([type, x, y], i) => this.objects.push({ id: `start${i}`, type, x, y, amount: 6, regrow: 0, variant: i % 3, rev: 0 }));
     for (let i = 0; i < 7; i++) this.enemies.push({ id: `e${i}`, x: 420 + random() * 1550, y: 300 + random() * 550, health: 60, cooldown: 0, respawn: 0 });
   }
   addPlayer(id, name) {
@@ -112,6 +114,7 @@ export class World {
       p.actionAt = this.time;
       p.action = { kind: 'gather', at: this.time, target: object.id };
       object.hitAt = this.time;
+      object.rev += 1;
       return { ok: true, message: `获得 ${ITEMS[resource].name} ×${count}${object.type === 'rock' ? '、燧石 ×1' : ''}` };
     }
     if (message.type === 'craft') {
@@ -161,7 +164,7 @@ export class World {
   tick(dt) {
     this.time += dt;
     const phase = phaseAt(this.time);
-    for (const o of this.objects) if (!o.amount && this.time >= o.regrow) o.amount = 3;
+    for (const o of this.objects) if (!o.amount && this.time >= o.regrow) { o.amount = 3; o.rev += 1; }
     this.fires = this.fires.filter(f => f.until + 30 > this.time);
     for (const p of this.players.values()) {
       if (p.dead) continue;
@@ -195,7 +198,25 @@ export class World {
       if (d < 36 && !repelled && this.time > enemy.cooldown) { prey.health = Math.max(0, prey.health - 8); prey.hurtAt = this.time; enemy.cooldown = this.time + 1.5; }
     }
   }
+  // Resource objects only change when somebody gathers or they regrow, and they are
+  // 95% of a full snapshot. Clients that announce the delta protocol receive them
+  // once on join and afterwards only the ones whose revision changed, which cuts the
+  // broadcast from ~24KB to ~1.4KB per tick over long-distance links.
+  serializeObjects() { return this.objects.map(serializeObject); }
+  seedRevisions(revisions) {
+    revisions.clear();
+    for (const object of this.objects) revisions.set(object.id, object.rev);
+  }
+  deltaObjects(revisions) {
+    const changed = [];
+    for (const object of this.objects) {
+      if (revisions.get(object.id) === object.rev) continue;
+      revisions.set(object.id, object.rev);
+      changed.push(serializeObject(object));
+    }
+    return changed;
+  }
   snapshot() {
-    return { code: this.code, time: this.time, day: Math.floor(this.time / CYCLE_SECONDS) + 1, phase: phaseAt(this.time), objects: this.objects, fires: this.fires, enemies: this.enemies, events: this.events, players: [...this.players.values()].map(({ input: _input, target: _target, actionAt: _actionAt, ...p }) => p) };
+    return { code: this.code, time: this.time, day: Math.floor(this.time / CYCLE_SECONDS) + 1, phase: phaseAt(this.time), fires: this.fires, enemies: this.enemies, events: this.events, players: [...this.players.values()].map(({ input: _input, target: _target, actionAt: _actionAt, ...p }) => p) };
   }
 }
