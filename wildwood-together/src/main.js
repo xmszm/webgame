@@ -38,6 +38,53 @@ let eventsSignature = '';
 const keys = new Set();
 const stored = (() => { try { return JSON.parse(localStorage.getItem('wildwood-profile') || '{}'); } catch { return {}; } })();
 const profile = { name: stored.name || '林间旅人', code: new URLSearchParams(location.search).get('room') || stored.code || 'WILD01' };
+
+// Snapshots arrive about ten times a second. Drawing those raw positions makes the
+// character lurch forward and then glide, so the renderer is fed positions
+// interpolated between two snapshots. The interpolation runs on the *server's*
+// clock rather than on arrival times: snapshots reach the client unevenly (bunched
+// or delayed by the network), while their server timestamps are evenly spaced, so
+// interpolating against them keeps the walking speed constant. A sliding minimum of
+// the observed network delay keeps that clock honest, and the render moment stays a
+// fixed distance behind the newest snapshot. If the stream stalls long enough to
+// outrun the buffer the position holds until data arrives, which the renderer's
+// smoothing turns into a short slowdown instead of a jump.
+const RENDER_DELAY_MS = 200;
+const CLOCK_WINDOW_MS = 2400;
+const snapshotHistory = [];
+function rememberSnapshot(next) {
+  const receivedAt = performance.now();
+  const serverMs = next.time * 1000;
+  snapshotHistory.push({ serverMs, receivedAt, state: next });
+  while (snapshotHistory.length > 2 && snapshotHistory[1].serverMs < serverMs - CLOCK_WINDOW_MS) snapshotHistory.shift();
+}
+function interpolateEntities(older, newer, key, k) {
+  return newer[key].map(entity => {
+    const before = older[key].find(item => item.id === entity.id);
+    return before ? { ...entity, x: before.x + (entity.x - before.x) * k, y: before.y + (entity.y - before.y) * k } : entity;
+  });
+}
+function renderState(now) {
+  const newest = snapshotHistory[snapshotHistory.length - 1];
+  if (!newest) return state;
+  if (snapshotHistory.length < 2) return newest.state;
+  // Best-case latency in the recent window: the server clock we can trust.
+  let offset = Infinity;
+  for (const snapshot of snapshotHistory) offset = Math.min(offset, snapshot.receivedAt - snapshot.serverMs);
+  const oldest = snapshotHistory[0];
+  const at = Math.max(now - offset - RENDER_DELAY_MS, oldest.serverMs);
+  let older = null, newer = null;
+  for (let i = snapshotHistory.length - 1; i > 0; i--) {
+    if (snapshotHistory[i - 1].serverMs <= at && snapshotHistory[i].serverMs >= at) { older = snapshotHistory[i - 1]; newer = snapshotHistory[i]; break; }
+  }
+  if (!older || !newer || newer.serverMs === older.serverMs) return newest.state;
+  const k = Math.min(1, Math.max(0, (at - older.serverMs) / (newer.serverMs - older.serverMs)));
+  return {
+    ...newer.state,
+    players: interpolateEntities(older.state, newer.state, 'players', k),
+    enemies: interpolateEntities(older.state, newer.state, 'enemies', k),
+  };
+}
 $('name-input').value = profile.name;
 $('code-input').value = profile.code;
 
@@ -95,6 +142,7 @@ function connect() {
     }
     if (message.type === 'state') {
       state = message.state;
+      rememberSnapshot(message.state);
       updateUI();
       if (pendingGather && self()) {
         const target = state.objects.find(o => o.id === pendingGather);
@@ -363,7 +411,7 @@ $('sound-button').addEventListener('click', async () => {
   } catch { toast('浏览器不支持音效，仍可正常游玩', true); }
 });
 function frame(time) {
-  renderer.render(state, playerId, time / 1000);
+  renderer.render(renderState(time), playerId, time / 1000);
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);

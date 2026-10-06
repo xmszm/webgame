@@ -2,6 +2,11 @@ const noise = (x, y) => { const n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453
 const mix = (a, b, t) => a + (b - a) * t;
 const ASSETS = ['tree', 'tree-sparse', 'berry', 'grass', 'rock', 'sapling', 'survivor', 'spider', 'terrain', 'item-axe', 'item-torch'];
 const HEIGHTS = { tree: 225, grass: 65, rock: 78, berry: 92, sapling: 100 };
+// The renderer follows interpolated targets, so these rates only have to remove the
+// remaining jitter. Keeping camera and actors identical stops the world from
+// scrolling at a different rhythm than the character walks.
+const ACTOR_SMOOTHING = 25;
+const CAMERA_SMOOTHING = 25;
 export class Renderer {
   constructor(canvas) {
     this.canvas = canvas;
@@ -98,7 +103,7 @@ export class Renderer {
       if (Math.abs(dx) > 0.2) actor.facing = dx > 0 ? 1 : -1;
       actor.lastX = player.x; actor.lastY = player.y;
     }
-    actor.x = mix(actor.x, player.x, 1 - Math.exp(-dt * 25)); actor.y = mix(actor.y, player.y, 1 - Math.exp(-dt * 25));
+    actor.x = mix(actor.x, player.x, 1 - Math.exp(-dt * ACTOR_SMOOTHING)); actor.y = mix(actor.y, player.y, 1 - Math.exp(-dt * ACTOR_SMOOTHING));
     if (this.frame < actor.movingUntil) actor.gait += dt * 11;
     return actor;
   }
@@ -106,7 +111,7 @@ export class Renderer {
     this.frame = time;
     const dt = Math.min(0.05, Math.max(0.001, time - this.lastFrame)); this.lastFrame = time;
     const c = this.ctx, self = state?.players.find(p => p.id === id);
-    if (self) { this.camera.x = mix(this.camera.x, self.x, 1 - Math.exp(-dt * 11)); this.camera.y = mix(this.camera.y, self.y, 1 - Math.exp(-dt * 11)); }
+    if (self) { this.camera.x = mix(this.camera.x, self.x, 1 - Math.exp(-dt * CAMERA_SMOOTHING)); this.camera.y = mix(this.camera.y, self.y, 1 - Math.exp(-dt * CAMERA_SMOOTHING)); }
     c.clearRect(0, 0, this.width, this.height);
     c.fillStyle = '#77704d'; c.fillRect(0, 0, this.width, this.height);
     if (!this.terrain) {
